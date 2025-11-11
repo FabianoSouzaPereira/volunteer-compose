@@ -97,7 +97,7 @@ class LoginViewModel @Inject constructor(
                                 message.contains("unable to resolve host", ignoreCase = true) ->
                             LoginState.LoginNoConnection(message)
 
-                        else -> LoginState.LoginUnknown(message)
+                        else -> LoginState.LoginError(message)
                     }
                 }
             )

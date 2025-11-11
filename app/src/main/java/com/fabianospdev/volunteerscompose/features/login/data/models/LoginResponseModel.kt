@@ -6,7 +6,6 @@ data class LoginResponseModel(
     val id: String,
     val name: String,
     val email: String,
-    val password: String,
     val token: String
 )
 
@@ -16,7 +15,6 @@ fun LoginResponseModel.toEntity(): LoginResponseEntity {
         id = id,
         name = name,
         email = email,
-        password = password,
         token = token
     )
 }

@@ -3,17 +3,30 @@ agp = "8.13.1"
 hiltAndroid = "2.57.2"
 kotlin = "2.2.20"
 coreKtx = "1.17.0"
+
+# --- Testes ---
 junit = "4.13.2"
-junitVersion = "1.3.0"
-espressoCore = "3.7.0"
+junitVersion = "1.1.5" # compatível com Compose 1.9.4
+espressoCore = "3.5.0" # compatível com androidx.test.ext:junit:1.1.5
+mockitoCore = "5.20.0"
+mockitoInline = "5.2.0"
+mockitoKotlin = "6.1.0"
+uiTestJunit4 = "1.9.4"
+robolectric = "4.16"
+
+# --- Compose e AndroidX ---
 lifecycleRuntimeKtx = "2.9.4"
 runtimeLivedata = "1.9.4"
 activityCompose = "1.11.0"
 composeBom = "2025.11.00"
+
+# -- Hilt ---
 hilt = "2.57.2"
 hiltCommon = "1.3.0"
 hiltCompiler = "1.3.0"
 hiltNavigationCompose = "1.3.0"
+
+# --- Outros ---
 ksp-symbolProcessing = "2.2.0-2.0.2"
 ksp-symbolProcessingApi = "2.2.0-2.0.2"
 comGoogleDevtoolsKspGradlePluginVersion = "2.2.0-2.0.2"
@@ -27,12 +40,21 @@ okhttp = "5.3.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+
+# --- Testes ---
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "uiTestJunit4" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
+mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockitoInline" }
+mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+
+# --- Compose e AndroidX ---
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
@@ -49,6 +71,8 @@ androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", vers
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltAndroid" }
+
+# ksp for Hilt
 symbol-processing = { group = "com.google.devtools.ksp", name = "symbol-processing", version.ref = "ksp-symbolProcessing" }
 symbol-processing-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp-symbolProcessingApi" }
 androidx-room-runtime-android = { group = "androidx.room", name = "room-runtime-android", version.ref = "roomRuntimeAndroid" }
