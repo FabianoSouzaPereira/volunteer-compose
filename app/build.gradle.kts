@@ -3,15 +3,16 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
-    id("com.google.devtools.ksp") version "2.1.0-1.0.29"
+    alias(libs.plugins.hilt.android)
+    id("com.google.devtools.ksp")
 }
 
 android {
-    namespace = "com.fabianospdev.baseapp"
+    namespace = "com.fabianospdev.volunteerscompose"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.fabianospdev.baseapp"
+        applicationId = "com.fabianospdev.volunteerscompose"
         minSdk = 29
         targetSdk = 36
         versionCode = 1
@@ -37,6 +38,11 @@ android {
         jvmTarget = "21"
         freeCompilerArgs += listOf("-Xlint:deprecation")
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.4.0"
+    }
+
     buildFeatures {
         compose = true
         viewBinding = true
