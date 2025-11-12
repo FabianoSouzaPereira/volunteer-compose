@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -56,6 +57,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fabianospdev.volunteerscompose.R
 import com.fabianospdev.volunteerscompose.core.utils.LoadFontsFamily
+import com.fabianospdev.volunteerscompose.ui.theme.appGradient
+
 
 @Composable
 fun ShowLoginIdle(
@@ -65,7 +68,6 @@ fun ShowLoginIdle(
     passwordError: String?,
     showPassword: Boolean,
     isFormValid: Boolean,
-    gradient: Brush,
     focusRequester: FocusRequester,
     keyboardController: SoftwareKeyboardController?,
     onLoginClick: () -> Unit,
@@ -73,6 +75,8 @@ fun ShowLoginIdle(
     onPasswordChange: (String) -> Unit,
     onTogglePasswordVisibility: () -> Unit
 ) {
+    val USER_NAME_TEXT_FIELD = "userNameTextField"
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.onSurface,
@@ -81,7 +85,7 @@ fun ShowLoginIdle(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(brush = gradient)
+                .background(brush = MaterialTheme.appGradient)
         ) {
             Column(
                 modifier = Modifier
@@ -92,7 +96,7 @@ fun ShowLoginIdle(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.logo),
-                    contentDescription = "logo",
+                    contentDescription = "Mindflow logo",
                     modifier = Modifier
                         .size(300.dp)
                         .clip(RoundedCornerShape(16.dp))
@@ -105,6 +109,7 @@ fun ShowLoginIdle(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
+                    modifier = Modifier.testTag("LoginIdleTitle"),
                     text = stringResource(R.string.login),
                     fontSize = with(LocalDensity.current) {
                         dimensionResource(id = R.dimen.title_font_text_size).value.sp
@@ -115,6 +120,7 @@ fun ShowLoginIdle(
                     fontStyle = FontStyle.Normal
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(R.dimen.minium_space_betwing_elements)))
+
                 TextField(
                     value = username,
                     onValueChange = onUsernameChange,
@@ -130,6 +136,7 @@ fun ShowLoginIdle(
                     textStyle = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold),
                     shape = RoundedCornerShape(25),
                     modifier = Modifier
+                        .testTag(USER_NAME_TEXT_FIELD)
                         .padding(20.dp, 20.dp, 20.dp, 1.dp)
                         .border(
                             width = dimensionResource(R.dimen.textfield_border_size),
@@ -244,16 +251,17 @@ fun ShowLoginIdle(
                         disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
                     modifier = Modifier
-                        .width(dimensionResource(R.dimen.button_width_medium))
-                        .padding(dimensionResource(R.dimen.button_padding))
-                        .clip(RoundedCornerShape(dimensionResource(R.dimen.button_rounded_corner_shape)))
+                        .testTag(tag = "LoginButton")
+                        .width(width = dimensionResource(R.dimen.button_width_medium))
+                        .padding(all = dimensionResource(R.dimen.button_padding))
+                        .clip(shape = RoundedCornerShape(dimensionResource(R.dimen.button_rounded_corner_shape)))
                         .background(
                             brush = if (!isFormValid) Brush.verticalGradient(
                                 listOf(
                                     MaterialTheme.colorScheme.surfaceVariant,
                                     MaterialTheme.colorScheme.surfaceVariant
                                 )
-                            ) else gradient
+                            ) else MaterialTheme.appGradient
                         )
                         .border(
                             BorderStroke(
@@ -289,12 +297,6 @@ fun ShowLoginIdlePreview() {
         passwordError = null,
         showPassword = false,
         isFormValid = false,
-        gradient = Brush.verticalGradient(
-            colors = listOf(
-                Color(0xFF2196F3),
-                Color(0xFF21CBF3)
-            )
-        ),
         focusRequester = focusRequester,
         keyboardController = null,
         onLoginClick = { },

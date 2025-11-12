@@ -2,13 +2,18 @@ package com.fabianospdev.volunteerscompose.features.login.presentation
 
 import android.os.Build
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.printToLog
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fabianospdev.volunteerscompose.features.login.domain.entities.LoginResponseEntity
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginState
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -53,9 +58,8 @@ class LoginScreenTest {
 
         // Verifica se o composable de LoginIdle foi mostrado
         // supondo que ShowLoginIdle tenha algum texto visível ou tag
-        composeRule.onNodeWithTag("LoginIdle").assertExists()
+        composeRule.onNodeWithTag(testTag = "LoginIdleTitle").assertExists()
     }
-
 
     @Test
     fun whenStateIsLoading_shouldShowLoading() {
@@ -76,7 +80,7 @@ class LoginScreenTest {
             )
         }
 
-        composeRule.onNodeWithTag("LoginLoading").assertExists()
+        composeRule.onNodeWithTag(testTag = "LoginLoading").assertExists()
     }
 
     @Test
@@ -144,11 +148,17 @@ class LoginScreenTest {
                 onRetry = {}
             )
         }
+        composeRule.waitForIdle()
+        composeRule.onNodeWithTag("LoginButton", useUnmergedTree = true)
+            .assertExists()
+            .printToLog("DEBUG_TREE")
+        composeRule.onNodeWithTag("LoginButton")
+            .assertIsDisplayed()
+            .assertIsEnabled()
+            .performClick()
+        composeRule.waitForIdle()
 
-        // Supondo que o botão de login tenha tag "LoginButton"
-        composeRule.onNodeWithTag("LoginButton").performClick()
-
-        assert(clicked)
+        assertTrue(clicked)
     }
 
     @Test

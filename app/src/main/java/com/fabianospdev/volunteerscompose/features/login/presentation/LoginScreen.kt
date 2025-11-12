@@ -45,12 +45,7 @@ fun LoginScreen(
         var showPassword by remember { mutableStateOf(false) }
         var focusRequester by remember { mutableStateOf(FocusRequester()) }
         val keyboardController = LocalSoftwareKeyboardController.current
-        val gradient = Brush.verticalGradient(
-            colors = listOf(
-                Color(0xFF2196F3),
-                Color(0xFF21CBF3)
-            )
-        )
+
 
         Column(
             modifier = Modifier
@@ -71,7 +66,6 @@ fun LoginScreen(
                         passwordError = passwordError,
                         showPassword = showPassword,
                         isFormValid = isFormValid,
-                        gradient = gradient,
                         focusRequester = focusRequester,
                         keyboardController = keyboardController,
                         onLoginClick = onLoginClick,
@@ -117,9 +111,10 @@ fun LoginScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
+
     LoginScreen(
         state = LoginState.LoginIdle,
         navController = rememberNavController(),
@@ -128,7 +123,7 @@ fun LoginScreenPreview() {
         usernameError = null,
         passwordError = null,
         isFormValid = true,
-        onLoginClick = {},
+        onLoginClick = { },
         onUsernameChange = {},
         onPasswordChange = {},
         onTogglePasswordVisibility = {},
