@@ -8,6 +8,7 @@ import com.fabianospdev.volunteerscompose.core.helpers.retry.RetryController
 import com.fabianospdev.volunteerscompose.features.login.domain.usecases.LoginUsecase
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -57,6 +58,16 @@ class LoginViewModel @Inject constructor(
         return isValid
     }
 
+    private fun retryLogin(email: String, password: String) {
+        viewModelScope.launch {
+            if (retryController.isRetryEnabled.value) {
+                performLogin(email, password)
+            } else {
+                _showRetryLimitReached.value = true
+            }
+        }
+    }
+
     private fun performLogin(email: String, password: String) {
         if (!retryController.isRetryEnabled.value) {
             _showRetryLimitReached.value = true
@@ -71,38 +82,40 @@ class LoginViewModel @Inject constructor(
         _state.value = LoginState.LoginLoading
 
         viewModelScope.launch {
-            _state.value = LoginState.LoginLoading
-
             val result = loginUsecase.getLogin(email, password)
 
-            _state.value = result.fold(
+            val newState: LoginState = result.fold(
                 onSuccess = { response ->
                     retryController.resetRetryCount()
                     clearInputFields()
                     LoginState.LoginSuccess(response)
                 },
                 onFailure = { throwable ->
-                    retryController.incrementRetryCount()
                     val message = throwable.message ?: "Erro desconhecido"
+                    retryController.incrementRetryCount()
 
                     when {
                         message.contains("timeout", ignoreCase = true) ->
                             LoginState.LoginTimeoutError(message)
 
-                        message.contains("unauthorized", ignoreCase = true) ||
-                                message.contains("401") ->
-                            LoginState.LoginUnauthorized(message)
-
                         message.contains("network", ignoreCase = true) ||
                                 message.contains("unable to resolve host", ignoreCase = true) ->
                             LoginState.LoginNoConnection(message)
+
+                        message.contains("unauthorized", ignoreCase = true) ||
+                                message.contains("401") ->
+                            LoginState.LoginUnauthorized(message)
 
                         else -> LoginState.LoginError(message)
                     }
                 }
             )
+
+            _state.value = newState
         }
     }
+
+
 
     fun onLoginClick() {
         if (validateForm()) {
@@ -124,12 +137,24 @@ class LoginViewModel @Inject constructor(
         isPasswordVisible.value = !isPasswordVisible.value
     }
 
-    fun resetState() {
-        _state.value = LoginState.LoginIdle
+    fun onRetry() {
+        if (retryController.isRetryEnabled.value) {
+            performLogin(username.value, password.value)
+        } else {
+            _showRetryLimitReached.value = true
+        }
     }
 
-    fun onRetry() {
-        resetState()
+    fun startRetryCooldown() {
+        viewModelScope.launch {
+            _showRetryLimitReached.value = true
+            delay(30000L)
+            _showRetryLimitReached.value  = false
+        }
+    }
+
+    fun resetState() {
+        _state.value = LoginState.LoginIdle
     }
 
     fun clearInputFields() {
