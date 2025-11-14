@@ -6,12 +6,11 @@ coreKtx = "1.17.0"
 
 # --- Testes ---
 junit = "4.13.2"
-junitVersion = "1.3.0" # compatível com Compose 1.9.4
-espressoCore = "3.7.0" # compatível com androidx.test.ext:junit:1.1.5
-mockitoCore = "5.20.0"
-mockitoInline = "5.2.0"
-mockitoKotlin = "6.1.0"
-uiTestJunit4 = "1.9.4"
+junitKtx = "1.3.0"
+espressoCore = "3.7.0"
+mockk = "1.14.6"
+turbine = "1.2.1"
+kotlinxCoroutinesTest = "1.10.2"
 robolectric = "4.16"
 
 # --- Compose e AndroidX ---
@@ -36,23 +35,23 @@ kotlinxSerializationJson = "1.9.0"
 kotlinxDatetime = "0.7.1"
 retrofit = "3.0.0"
 okhttp = "5.3.0"
+uiTestJunit4 = "1.9.4"
 
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-
-# --- Testes ---
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "uiTestJunit4" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
-mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
-mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockitoInline" }
-mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }
+
+# --- Testes ---
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 # --- Compose e AndroidX ---
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
@@ -89,6 +88,8 @@ androidx-security-crypto-ktx = { group = "androidx.security", name = "security-c
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinxDatetime" }
 com-google-devtools-ksp-gradle-plugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "comGoogleDevtoolsKspGradlePluginVersion" }
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "uiTestJunit4" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

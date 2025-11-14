@@ -4,10 +4,13 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fabianospdev.volunteerscompose.core.di.DispatcherProvider
 import com.fabianospdev.volunteerscompose.core.helpers.retry.RetryController
 import com.fabianospdev.volunteerscompose.features.login.domain.usecases.LoginUsecase
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +21,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val loginUsecase: LoginUsecase,
     private val retryController: RetryController,
+    private val dispatcherProvider: DispatcherProvider
 ) : ViewModel() {
     private val _state = MutableStateFlow<LoginState>(LoginState.LoginIdle)
     val state: StateFlow<LoginState> = _state
@@ -81,7 +85,7 @@ class LoginViewModel @Inject constructor(
 
         _state.value = LoginState.LoginLoading
 
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcherProvider.io) {
             val result = loginUsecase.getLogin(email, password)
 
             val newState: LoginState = result.fold(
