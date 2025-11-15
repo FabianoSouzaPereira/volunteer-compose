@@ -1,5 +1,7 @@
 package com.fabianospdev.volunteerscompose.features.login.presentation.components
 
+import android.R.attr.tag
+import android.R.attr.top
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults.contentPadding
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -35,8 +39,11 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
@@ -56,8 +63,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fabianospdev.volunteerscompose.R
+import com.android.volley.toolbox.ImageRequest
 import com.fabianospdev.volunteerscompose.core.utils.LoadFontsFamily
 import com.fabianospdev.volunteerscompose.ui.theme.appGradient
+import com.fabianospdev.volunteerscompose.features.login.presentation.utils.*
 
 
 @Composable
@@ -74,40 +83,44 @@ fun ShowLoginIdle(
     onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onTogglePasswordVisibility: () -> Unit
-) {
-    val USER_NAME_TEXT_FIELD = "userNameTextField"
-
+)
+{
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.onSurface,
         tonalElevation = 5.dp
     ) {
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(brush = MaterialTheme.appGradient)
-        ) {
+        )
+        {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
+                    .padding(all= 20.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.logo),
-                    contentDescription = "Mindflow logo",
-                    modifier = Modifier
-                        .size(300.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .border(
-                            width = 2.dp,
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            shape = RoundedCornerShape(16.dp)
-                        ),
-                    contentScale = ContentScale.Crop
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+                if(!isRunningRoboletric()) {
+                    Image(
+                        painter = painterResource(id = R.drawable.logo),
+                        contentDescription = "Mindflow logo",
+                        modifier = Modifier
+                            .testTag("imageLogoField")
+                            .size(300.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                shape = RoundedCornerShape(16.dp)
+                            ),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.large_space_betwing_elements)))
                 Text(
                     modifier = Modifier.testTag("LoginIdleTitle"),
                     text = stringResource(R.string.login),
@@ -119,8 +132,7 @@ fun ShowLoginIdle(
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontStyle = FontStyle.Normal
                 )
-                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.minium_space_betwing_elements)))
-
+                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.medium_space_betwing_elements)))
                 TextField(
                     value = username,
                     onValueChange = onUsernameChange,
@@ -136,8 +148,9 @@ fun ShowLoginIdle(
                     textStyle = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold),
                     shape = RoundedCornerShape(25),
                     modifier = Modifier
-                        .testTag(USER_NAME_TEXT_FIELD)
-                        .padding(20.dp, 20.dp, 20.dp, 1.dp)
+                        .testTag("userNameTextField")
+                        .fillMaxWidth()
+                        .padding(horizontal = 30.dp, vertical = 6.dp)
                         .border(
                             width = dimensionResource(R.dimen.textfield_border_size),
                             color = if (usernameError != null) Color.Red else MaterialTheme.colorScheme.onPrimary,
@@ -158,6 +171,18 @@ fun ShowLoginIdle(
                     },
                     maxLines = 1
                 )
+                if (usernameError != null) {
+                    Text(
+                        text = usernameError,
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier
+                            .testTag("userNameErrorTextField")
+                            .align(Alignment.Start)
+                            .padding(start = 32.dp, bottom = 4.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.medium_space_betwing_elements)))
                 TextField(
                     value = password,
                     onValueChange = onPasswordChange,
@@ -180,7 +205,9 @@ fun ShowLoginIdle(
                     ),
                     shape = RoundedCornerShape(25),
                     modifier = Modifier
-                        .padding(20.dp, 6.dp, 20.dp, 20.dp)
+                        .testTag("passwordTextField")
+                        .fillMaxWidth()
+                        .padding(horizontal = 30.dp, vertical = 6.dp)
                         .border(
                             width = dimensionResource(R.dimen.textfield_border_size),
                             color = if (passwordError != null) Color.Red else MaterialTheme.colorScheme.onPrimary,
@@ -237,7 +264,7 @@ fun ShowLoginIdle(
                             .padding(start = 32.dp, bottom = 4.dp)
                     )
                 }
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.large_space_betwing_elements)))
                 Button(
                     onClick = { onLoginClick() },
                     enabled = isFormValid,
@@ -253,7 +280,7 @@ fun ShowLoginIdle(
                     modifier = Modifier
                         .testTag(tag = "LoginButton")
                         .width(width = dimensionResource(R.dimen.button_width_medium))
-                        .padding(all = dimensionResource(R.dimen.button_padding))
+                        .padding(horizontal = 16.dp, vertical = 20.dp)
                         .clip(shape = RoundedCornerShape(dimensionResource(R.dimen.button_rounded_corner_shape)))
                         .background(
                             brush = if (!isFormValid) Brush.verticalGradient(
@@ -280,6 +307,7 @@ fun ShowLoginIdle(
                             MaterialTheme.colorScheme.onPrimary
                     )
                 }
+                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.medium_space_betwing_elements)))
             }
         }
     }

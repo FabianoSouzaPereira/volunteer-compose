@@ -25,6 +25,7 @@ import com.fabianospdev.volunteerscompose.features.login.presentation.components
 import com.fabianospdev.volunteerscompose.features.login.presentation.components.ShowLoginSuccess
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginState
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.toErrorType
+import com.fabianospdev.volunteerscompose.ui.theme.BaseAppTheme
 
 @Composable
 fun LoginScreen(
@@ -41,11 +42,11 @@ fun LoginScreen(
     onTogglePasswordVisibility: () -> Unit,
     onRetry: () -> Unit
 ) {
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        var showPassword by remember { mutableStateOf(false) }
-        var focusRequester by remember { mutableStateOf(FocusRequester()) }
-        val keyboardController = LocalSoftwareKeyboardController.current
+    var showPassword by remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
+    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 
         Column(
             modifier = Modifier
@@ -54,6 +55,7 @@ fun LoginScreen(
         ) {
 
             when (val s = state) {
+
                 is LoginState.LoginLoading -> {
                     ShowLoginLoading(navController)
                 }
@@ -73,15 +75,13 @@ fun LoginScreen(
                         onPasswordChange = onPasswordChange,
                         onTogglePasswordVisibility = {
                             showPassword = !showPassword
-                            onTogglePasswordVisibility
+                            onTogglePasswordVisibility()
                         }
                     )
                 }
 
                 is LoginState.LoginSuccess -> {
-                    ShowLoginSuccess(
-                        navController = navController
-                    )
+                    ShowLoginSuccess(navController)
                 }
 
                 is LoginState.LoginError,
@@ -90,18 +90,19 @@ fun LoginScreen(
                 is LoginState.LoginUnauthorized,
                 is LoginState.LoginValidationError,
                 is LoginState.LoginUnknown -> {
+
                     val message = when (s) {
-                        is LoginState.LoginError -> state.error
-                        is LoginState.LoginNoConnection -> state.message
-                        is LoginState.LoginTimeoutError -> state.message
-                        is LoginState.LoginUnauthorized -> state.message
-                        is LoginState.LoginValidationError -> state.message
-                        is LoginState.LoginUnknown -> state.message
+                        is LoginState.LoginError -> s.error
+                        is LoginState.LoginNoConnection -> s.message
+                        is LoginState.LoginTimeoutError -> s.message
+                        is LoginState.LoginUnauthorized -> s.message
+                        is LoginState.LoginValidationError -> s.message
+                        is LoginState.LoginUnknown -> s.message
                         else -> stringResource(R.string.erro_desconhecido)
                     }
 
                     ShowErrorScreen(
-                        type = state.toErrorType(),
+                        type = s.toErrorType(),
                         message = message,
                         onRetry = onRetry
                     )
@@ -111,22 +112,24 @@ fun LoginScreen(
     }
 }
 
+
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-
-    LoginScreen(
-        state = LoginState.LoginIdle,
-        navController = rememberNavController(),
-        username = "Pablo",
-        password = "123456",
-        usernameError = null,
-        passwordError = null,
-        isFormValid = true,
-        onLoginClick = { },
-        onUsernameChange = {},
-        onPasswordChange = {},
-        onTogglePasswordVisibility = {},
-        onRetry = {}
-    )
+    BaseAppTheme {
+        LoginScreen(
+            state = LoginState.LoginIdle,
+            navController = rememberNavController(),
+            username = "Pablo",
+            password = "123456",
+            usernameError = null,
+            passwordError = null,
+            isFormValid = true,
+            onLoginClick = { },
+            onUsernameChange = {},
+            onPasswordChange = {},
+            onTogglePasswordVisibility = {},
+            onRetry = {}
+        )
+    }
 }

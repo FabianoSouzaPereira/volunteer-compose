@@ -79,6 +79,8 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.androidx.junit.ktx)
     implementation(libs.androidx.compose.ui.test.junit4)
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.volley)
     testImplementation(libs.junit)
     ksp(libs.androidx.hilt.compiler)
     implementation(libs.hilt.android)
