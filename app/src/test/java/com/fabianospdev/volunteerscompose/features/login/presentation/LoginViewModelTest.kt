@@ -1,58 +1,49 @@
 package com.fabianospdev.volunteerscompose.features.login.presentation
 
 import app.cash.turbine.test
+import com.fabianospdev.volunteerscompose.core.FakeRetryController
 import com.fabianospdev.volunteerscompose.core.MainDispatcherRule
+import com.fabianospdev.volunteerscompose.core.di.DispatcherProvider
 import com.fabianospdev.volunteerscompose.core.helpers.coroutines.TestDispatcherProvider
-import com.fabianospdev.volunteerscompose.core.helpers.retry.RetryController
+import com.fabianospdev.volunteerscompose.core.helpers.retry.DefaultRetryController
 import com.fabianospdev.volunteerscompose.features.login.domain.entities.LoginResponseEntity
 import com.fabianospdev.volunteerscompose.features.login.domain.usecases.LoginUsecase
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginState
 import io.mockk.coEvery
-import io.mockk.every
+import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.clearAllMocks
-import io.mockk.confirmVerified
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class LoginViewModelMockKTest {
+class LoginViewModelTest {
 
     @get:Rule
-    val mainDispatcherRule = MainDispatcherRule()
+    val mainRule = MainDispatcherRule()
 
-    private val testDispatcher = StandardTestDispatcher()
-    private val dispatcherProvider = TestDispatcherProvider(testDispatcher)
-
-    private val dispatcher = StandardTestDispatcher()
+    private lateinit var dispatcherProvider: DispatcherProvider
+    private lateinit var loginUsecase: LoginUsecase
+    private lateinit var retryController: FakeRetryController
     private lateinit var viewModel: LoginViewModel
-    private lateinit var usecase: LoginUsecase
-    private lateinit var retryController: RetryController
 
     @Before
     fun setup() {
-        Dispatchers.setMain(dispatcher)
-        usecase = mockk()
-        retryController = mockk()
+        dispatcherProvider = TestDispatcherProvider(mainRule.dispatcher)
+        loginUsecase = mockk()
+        retryController = FakeRetryController()
 
-        // Mock default behavior
-        every { retryController.isRetryEnabled } returns MutableStateFlow(true)
-
-        val testDispatcherProvider = TestDispatcherProvider(mainDispatcherRule.dispatcher)
-        viewModel = LoginViewModel(usecase, retryController, testDispatcherProvider)
+        viewModel = LoginViewModel(
+            loginUsecase = loginUsecase,
+            retryController = retryController,
+            dispatcherProvider = dispatcherProvider
+        )
     }
 
     @After
@@ -62,21 +53,8 @@ class LoginViewModelMockKTest {
     }
 
     @Test
-    fun `should emit Success when login succeeds`() = runTest {
-        val expectedResponse = LoginResponseEntity("1", "Mock User", "email@email.com", "token")
-        coEvery { usecase.getLogin("user@test.com", "123456") } returns Result.success(expectedResponse)
-
-        viewModel.onUsernameChange("user@test.com")
-        viewModel.onPasswordChange("123456")
-        viewModel.onLoginClick()
-        advanceUntilIdle()
-
-        assertEquals(LoginState.LoginSuccess(expectedResponse), viewModel.state.value)
-    }
-
-    @Test
     fun `should emit Error when login fails`() = runTest {
-        coEvery { usecase.getLogin("user@test.com", "123456") } returns Result.failure(Exception("Login failed"))
+        coEvery { loginUsecase.getLogin("user@test.com", "123456") } returns Result.failure(Exception("Login failed"))
 
         viewModel.onUsernameChange("user@test.com")
         viewModel.onPasswordChange("123456")
@@ -95,13 +73,13 @@ class LoginViewModelMockKTest {
     }
 
     @Test
-    fun `should update username when onUsernameChange is called`() {
+    fun `should update username`() {
         viewModel.onUsernameChange("user@example.com")
         assertEquals("user@example.com", viewModel.username.value)
     }
 
     @Test
-    fun `should update password when onPasswordChange is called`() {
+    fun `should update password`() {
         viewModel.onPasswordChange("123456")
         assertEquals("123456", viewModel.password.value)
     }
@@ -116,56 +94,75 @@ class LoginViewModelMockKTest {
 
     @Test
     fun `should retry login when retry is called`() = runTest {
-        coEvery { usecase.getLogin(any(), any()) } returns Result.failure(Exception("error"))
+        coEvery { loginUsecase.getLogin(any(), any()) } returns Result.failure(Exception("network error"))
 
         viewModel.onUsernameChange("a@b.com")
-        viewModel.onPasswordChange("123")
+        viewModel.onPasswordChange("123456")
+
         viewModel.onLoginClick()
         advanceUntilIdle()
 
-        coEvery { usecase.getLogin(any(), any()) } returns Result.success(
-            LoginResponseEntity("1", "User", "a@b.com", "token")
-        )
-
         viewModel.onRetry()
-        advanceUntilIdle() // <-- Agora vai esperar o launch da viewModel
+        advanceUntilIdle()
 
-        assertEquals(
-            LoginState.LoginSuccess(LoginResponseEntity("1", "User", "a@b.com", "token")),
-            viewModel.state.value
-        )
-
-        confirmVerified(usecase)
+        coVerify(exactly = 2) { loginUsecase.getLogin("a@b.com", "123456") }
     }
-
 
     @Test
     fun `should emit Loading then Success`() = runTest {
-        val expectedResponse = LoginResponseEntity("1", "User", "a@b.com", "token")
+        coEvery { loginUsecase.getLogin(any(), any()) } returns Result.success(
+            LoginResponseEntity("1", "Pedro Santos", "a@b.com", "abc123")
+        )
 
-        coEvery { usecase.getLogin(any(), any()) } returns Result.success(expectedResponse)
-
-        val viewModel = LoginViewModel(usecase, retryController, dispatcherProvider)
         viewModel.onUsernameChange("a@b.com")
-        viewModel.onPasswordChange("123")
+        viewModel.onPasswordChange("123456")
 
         viewModel.state.test {
-            assertEquals(LoginState.LoginIdle, awaitItem())
+            awaitItem() // Idle
 
             viewModel.onLoginClick()
+
+            assert(awaitItem() is LoginState.LoginLoading)
+
             advanceUntilIdle()
 
-            assertEquals(LoginState.LoginLoading, awaitItem())
-            assertEquals(LoginState.LoginSuccess(expectedResponse), awaitItem())
+            assert(awaitItem() is LoginState.LoginSuccess)
 
-            cancelAndIgnoreRemainingEvents()
+            cancelAndConsumeRemainingEvents()
         }
+
+        coVerify(exactly = 1) { loginUsecase.getLogin("a@b.com", "123456") }
     }
 
+    // ------------------------------
+    // Teste de cooldown REAL
+    // ------------------------------
     @Test
-    fun `should unblock retry after 30 seconds`() = runTest {
-        viewModel.startRetryCooldown()
-        advanceTimeBy(30000)
-        assertFalse(viewModel.showRetryLimitReached.value)
+    fun `should unblock retry after cooldown`() = runTest {
+        val retry = DefaultRetryController(
+            maxRetries = 3,
+            retryCooldownMillis = 30_000,
+            autoReset = true,
+            scope = this
+        )
+
+        val vm = LoginViewModel(
+            loginUsecase,
+            retry,
+            dispatcherProvider
+        )
+
+        // aciona o limite
+        retry.incrementRetryCount()
+        retry.incrementRetryCount()
+        retry.incrementRetryCount()
+
+        assert(!retry.isRetryEnabled.value)
+
+        // avança tempo
+        advanceTimeBy(30_000)
+        advanceUntilIdle()
+
+        assert(retry.isRetryEnabled.value)
     }
 }

@@ -11,11 +11,7 @@ class LoginRepositoryImpl @Inject constructor(
 ) : LoginRepository {
 
     override suspend fun getLogin(email: String, password: String): Result<LoginResponseEntity> {
-        return try {
-            val responseModel = loginDatasource.getLogin(email, password).getOrThrow()
-            Result.success(responseModel.toEntity())
-        } catch (e: Throwable) {
-            Result.failure(e)
-        }
+        return loginDatasource.getLogin(email, password)
+            .map { it.toEntity() }
     }
 }

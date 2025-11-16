@@ -1,7 +1,5 @@
 package com.fabianospdev.volunteerscompose.core.di
 
-import com.fabianospdev.volunteerscompose.core.helpers.retry.DefaultRetryController
-import com.fabianospdev.volunteerscompose.core.helpers.retry.RetryController
 import com.fabianospdev.volunteerscompose.features.home.data.remote.HomeApiService
 import com.fabianospdev.volunteerscompose.features.login.data.remote.LoginApiService
 import dagger.Module
@@ -35,9 +33,4 @@ object CoreModule {
         return retrofit.create(HomeApiService::class.java)
     }
 
-    @Provides
-    @Singleton
-    fun provideRetryController(): RetryController {
-        return DefaultRetryController(3)
-    }
 }

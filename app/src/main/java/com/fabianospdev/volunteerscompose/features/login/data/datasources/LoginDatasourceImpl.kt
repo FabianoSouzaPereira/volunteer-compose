@@ -8,7 +8,6 @@ import javax.inject.Inject
 class LoginDatasourceImpl @Inject constructor(
     private val api: LoginApiService
 ) : LoginDatasource {
-
     override suspend fun getLogin(email: String, password: String): Result<LoginResponseModel> {
         return try {
             val response = api.getLogin(email, password)

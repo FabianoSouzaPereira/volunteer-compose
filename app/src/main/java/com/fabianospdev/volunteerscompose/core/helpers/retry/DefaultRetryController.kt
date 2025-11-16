@@ -1,7 +1,6 @@
 package com.fabianospdev.volunteerscompose.core.helpers.retry
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,8 +10,9 @@ class DefaultRetryController(
     private val maxRetries: Int = 3,
     override val retryCooldownMillis: Long = 30_000L,
     override val autoReset: Boolean = true,
-    private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default)
+    private val scope: CoroutineScope
 ) : RetryController {
+
     private val _isRetryEnabled = MutableStateFlow(true)
     override val isRetryEnabled: StateFlow<Boolean> = _isRetryEnabled
 
@@ -26,6 +26,7 @@ class DefaultRetryController(
         if (retryCount >= maxRetries) {
             _isRetryEnabled.value = false
             _isRetryLimitReached.value = true
+
             if (autoReset) startCooldownTimer()
         }
     }
@@ -44,7 +45,6 @@ class DefaultRetryController(
     }
 
     override fun resetRetryLimitNotification() {
-        retryCount = 0
-        _isRetryLimitReached.value = true
+        _isRetryLimitReached.value = false
     }
 }

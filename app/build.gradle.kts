@@ -112,3 +112,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     testImplementation(kotlin("test"))
 }
+
+tasks.withType<Test>().configureEach {
+    jvmArgs("-XX:+EnableDynamicAgentLoading")
+}

@@ -9,13 +9,10 @@ import com.fabianospdev.volunteerscompose.core.helpers.retry.RetryController
 import com.fabianospdev.volunteerscompose.features.login.domain.usecases.LoginUsecase
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
@@ -23,6 +20,7 @@ class LoginViewModel @Inject constructor(
     private val retryController: RetryController,
     private val dispatcherProvider: DispatcherProvider
 ) : ViewModel() {
+
     private val _state = MutableStateFlow<LoginState>(LoginState.LoginIdle)
     val state: StateFlow<LoginState> = _state
 
@@ -36,6 +34,18 @@ class LoginViewModel @Inject constructor(
 
     private val _showRetryLimitReached = MutableStateFlow(false)
     val showRetryLimitReached: StateFlow<Boolean> get() = _showRetryLimitReached
+
+    init {
+        observeRetryController()
+    }
+
+    private fun observeRetryController() {
+        viewModelScope.launch {
+            retryController.isRetryLimitReached.collect { reached ->
+                _showRetryLimitReached.value = reached
+            }
+        }
+    }
 
     private fun validateForm(): Boolean {
         var isValid = true
@@ -62,19 +72,8 @@ class LoginViewModel @Inject constructor(
         return isValid
     }
 
-    private fun retryLogin(email: String, password: String) {
-        viewModelScope.launch {
-            if (retryController.isRetryEnabled.value) {
-                performLogin(email, password)
-            } else {
-                _showRetryLimitReached.value = true
-            }
-        }
-    }
-
     private fun performLogin(email: String, password: String) {
         if (!retryController.isRetryEnabled.value) {
-            _showRetryLimitReached.value = true
             return
         }
 
@@ -95,8 +94,8 @@ class LoginViewModel @Inject constructor(
                     LoginState.LoginSuccess(response)
                 },
                 onFailure = { throwable ->
-                    val message = throwable.message ?: "Erro desconhecido"
                     retryController.incrementRetryCount()
+                    val message = throwable.message ?: "Erro desconhecido"
 
                     when {
                         message.contains("timeout", ignoreCase = true) ->
@@ -118,8 +117,6 @@ class LoginViewModel @Inject constructor(
             _state.value = newState
         }
     }
-
-
 
     fun onLoginClick() {
         if (validateForm()) {
@@ -144,16 +141,6 @@ class LoginViewModel @Inject constructor(
     fun onRetry() {
         if (retryController.isRetryEnabled.value) {
             performLogin(username.value, password.value)
-        } else {
-            _showRetryLimitReached.value = true
-        }
-    }
-
-    fun startRetryCooldown() {
-        viewModelScope.launch {
-            _showRetryLimitReached.value = true
-            delay(30000L)
-            _showRetryLimitReached.value  = false
         }
     }
 
@@ -164,13 +151,11 @@ class LoginViewModel @Inject constructor(
     fun clearInputFields() {
         username.value = ""
         password.value = ""
-        usernameError.value = null
-        passwordError.value = null
     }
 
     fun resetAll() {
         clearInputFields()
-        _showRetryLimitReached.value = false
+        retryController.resetRetryLimitNotification()
         resetState()
     }
 }
