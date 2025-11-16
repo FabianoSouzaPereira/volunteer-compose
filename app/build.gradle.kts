@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.hilt.android)
     id("com.google.devtools.ksp")
+    id("org.jetbrains.kotlinx.kover")
 }
 
 android {
@@ -30,13 +31,14 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
+
     kotlinOptions {
         jvmTarget = "21"
-        freeCompilerArgs += listOf("-Xlint:deprecation")
     }
 
     composeOptions {
@@ -44,9 +46,7 @@ android {
     }
 
     testOptions {
-        unitTests {
-            isIncludeAndroidResources = true
-        }
+        unitTests.isIncludeAndroidResources = true
     }
 
     buildFeatures {
@@ -57,8 +57,6 @@ android {
     ksp {
         arg("room.incremental", "true")
     }
-
-    buildToolsVersion = "36.0.0"
 }
 
 dependencies {
@@ -71,7 +69,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    /* HILT */
+
     implementation(libs.androidx.hilt.common)
     implementation(libs.androidx.room.runtime.android)
     implementation(libs.androidx.security.crypto.ktx)
@@ -81,25 +79,20 @@ dependencies {
     implementation(libs.androidx.compose.ui.test.junit4)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.volley)
-    testImplementation(libs.junit)
+
     ksp(libs.androidx.hilt.compiler)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-
-    // Optional para Compose:
     implementation(libs.androidx.hilt.navigation.compose)
 
-    /* KSP */
     implementation(libs.symbol.processing)
     implementation(libs.symbol.processing.api)
 
-    /* RETROFIT */
     implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.gson) // ou .moshi
+    implementation(libs.retrofit.converter.gson)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
 
-    /* Tests */
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.junit)
@@ -115,4 +108,22 @@ dependencies {
 
 tasks.withType<Test>().configureEach {
     jvmArgs("-XX:+EnableDynamicAgentLoading")
+}
+
+kover {
+    reports {
+        total {
+            html { onCheck = false }
+            xml { onCheck = false }
+        }
+        verify {
+            rule {
+                bound {
+                    minValue = 90
+                    maxValue = 100
+                }
+            }
+        }
+    }
+
 }

@@ -9,7 +9,7 @@ class FakeLoginRepository(
     private val shouldSucceed: Boolean = true
 ) : LoginRepository {
 
-    override suspend fun getLogin(username: String, password: String): Result<LoginResponseEntity> {
+    override suspend fun getLogin(email: String, password: String): Result<LoginResponseEntity> {
         delay(100)
         return if (shouldSucceed) {
             Result.success(LoginResponseEntity(id = "1", name = "Fabiano", email = "", token = "abc123"))
