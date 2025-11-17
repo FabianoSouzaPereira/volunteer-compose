@@ -11,6 +11,7 @@ plugins {
 android {
     namespace = "com.fabianospdev.volunteerscompose"
     compileSdk = 36
+    testBuildType = "debug"
 
     defaultConfig {
         applicationId = "com.fabianospdev.volunteerscompose"
@@ -25,11 +26,17 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            enableUnitTestCoverage = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
+        debug {
+            isMinifyEnabled = false
+            enableUnitTestCoverage = true
+        }
+
     }
 
     compileOptions {
@@ -47,6 +54,9 @@ android {
 
     testOptions {
         unitTests.isIncludeAndroidResources = true
+        unitTests.all {
+            testBuildType = "debug"
+        }
     }
 
     buildFeatures {
@@ -57,6 +67,7 @@ android {
     ksp {
         arg("room.incremental", "true")
     }
+
 }
 
 dependencies {
@@ -85,9 +96,6 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
-    implementation(libs.symbol.processing)
-    implementation(libs.symbol.processing.api)
-
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
     implementation(libs.okhttp)
@@ -110,20 +118,75 @@ tasks.withType<Test>().configureEach {
     jvmArgs("-XX:+EnableDynamicAgentLoading")
 }
 
+afterEvaluate {
+    tasks.withType<Test>().configureEach {
+        if (name.contains("Release", ignoreCase = true)) {
+            enabled = false
+            logger.lifecycle("Task $name desabilitada")
+        }
+    }
+}
+
 kover {
     reports {
         total {
-            html { onCheck = false }
-            xml { onCheck = false }
+            html {
+                onCheck.set(false)
+            }
+            xml {
+                onCheck.set(false)
+            }
         }
+
         verify {
-            rule {
+            rule("line-coverage") {
                 bound {
                     minValue = 90
-                    maxValue = 100
                 }
+            }
+            rule("branch-coverage") {
+                bound {
+                    minValue = 80
+                }
+            }
+        }
+
+        filters {
+            excludes {
+                androidGeneratedClasses()
+                classes(
+                    "*Hilt_*",
+                    "*_Factory",
+                    "*Companion",
+                    "*\$InjectAdapter*",
+                    "*\$ModuleAdapter*",
+                    "*\$ViewInjector*",
+                    "dagger.hilt.android.internal.*",
+                    "dagger.hilt.internal.*",
+                    "*_HiltComponents*",
+                    "*HiltModules*",
+                    "*_MembersInjector",
+                    "*ViewModel_Factory*",
+                    "com.fabianospdev.volunteerscompose.VolunteersComposeApp",
+                    "com.fabianospdev.volunteerscompose.features.login.presentation.utils.*",
+                    "com.fabianospdev.volunteerscompose.core.utils.*",
+                    "com.fabianospdev.volunteerscompose.ui.theme.*",
+                    "com.fabianospdev.volunteerscompose.di.*"
+                )
             }
         }
     }
 
+}
+
+tasks.register("testDebugOnly") {
+    group = "verification"
+    description = "Run ONLY debug tests and generate coverage"
+
+    dependsOn("testDebugUnitTest", "koverHtmlReport")
+
+    doLast {
+        println("✅ Testes DEBUG executados com sucesso!")
+        println("📊 Relatório de cobertura: app/build/reports/kover/html/index.html")
+    }
 }
