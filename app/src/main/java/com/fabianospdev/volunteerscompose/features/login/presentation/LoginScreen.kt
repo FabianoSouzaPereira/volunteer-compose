@@ -1,29 +1,26 @@
 package com.fabianospdev.volunteerscompose.features.login.presentation
 
-import android.R.attr.password
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.fabianospdev.volunteerscompose.R
 import com.fabianospdev.volunteerscompose.features.login.presentation.components.ShowErrorScreen
 import com.fabianospdev.volunteerscompose.features.login.presentation.components.ShowLoginIdle
 import com.fabianospdev.volunteerscompose.features.login.presentation.components.ShowLoginLoading
 import com.fabianospdev.volunteerscompose.features.login.presentation.components.ShowLoginSuccess
+import com.fabianospdev.volunteerscompose.features.login.presentation.components.ShowLoginSuccessPopup
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginFormState
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginNavigationEvent
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginState
@@ -33,17 +30,38 @@ import com.fabianospdev.volunteerscompose.ui.theme.BaseAppTheme
 
 @Composable
 fun LoginScreen(
-    viewState: LoginViewState, // ✅ Recebe o estado consolidado
+    viewState: LoginViewState,
     onLoginClick: () -> Unit,
     onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onTogglePasswordVisibility: () -> Unit,
     onRetry: () -> Unit,
+    onClearInputFields: () -> Unit,
     onNavigationEvent: (LoginNavigationEvent) -> Unit = {}
 ) {
-    // Extrai os valores do viewState
+    /* Extrai os valores do viewState */
     val formState = viewState.formState
     val screenState = viewState.screenState
+
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    var showSuccessPopup by remember { mutableStateOf(false) }
+
+    /* Mostrar popup quando login for bem sucedido */
+    if (showSuccessPopup) {
+        ShowLoginSuccessPopup(
+            message = "Login realizado com sucesso!",
+            onDismiss = { showSuccessPopup = false },
+            imageResId = R.drawable.baseline_emoji_emotions_24,
+            onAutoDismiss = onClearInputFields
+        )
+    }
+
+    LaunchedEffect(screenState) {
+        if (screenState is LoginState.LoginSuccess) {
+            showSuccessPopup = true
+        }
+    }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
@@ -60,6 +78,8 @@ fun LoginScreen(
                         onUsernameChange = onUsernameChange,
                         onPasswordChange = onPasswordChange,
                         onTogglePasswordVisibility = onTogglePasswordVisibility,
+                        focusRequester = focusRequester,
+                        keyboardController = keyboardController,
                         onNavigationEvent = onNavigationEvent
                     )
                 }
@@ -108,6 +128,7 @@ fun LoginScreenPreview() {
             onPasswordChange = {},
             onTogglePasswordVisibility = {},
             onRetry = {},
+            onClearInputFields = {},
             onNavigationEvent = {}
         )
     }

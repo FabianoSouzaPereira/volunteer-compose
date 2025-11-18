@@ -1,4 +1,4 @@
-package com.fabianospdev.volunteerscompose.features.home.presentation
+package com.fabianospdev.volunteerscompose.features.home.presentation.states
 
 import com.fabianospdev.volunteerscompose.core.domain.models.ErrorType
 import com.fabianospdev.volunteerscompose.features.home.domain.entities.HomeEntity

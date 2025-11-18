@@ -26,6 +26,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -96,7 +97,7 @@ fun ShowLoginIdle(
                         contentDescription = "Mindflow logo",
                         modifier = Modifier
                             .testTag("imageLogoField")
-                            .size(300.dp)
+                            .size(100.dp, 100.dp)
                             .clip(RoundedCornerShape(16.dp))
                             .border(
                                 width = 2.dp,
@@ -304,6 +305,52 @@ fun ShowLoginIdle(
                         color = if (!formState.isFormValid) MaterialTheme.colorScheme.outline else
                             MaterialTheme.colorScheme.onPrimary
                     )
+                }
+                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.medium_space_betwing_elements)))
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+
+                    TextButton(
+                        onClick = {
+                            onNavigationEvent(LoginNavigationEvent.NavigateToForgotPassword)
+                        },
+                        modifier = Modifier.testTag("forgotPasswordButton")
+                    ) {
+                        Text(
+                            text = "Esqueci minha senha",
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontSize = 14.sp
+                        )
+                    }
+
+                    TextButton(
+                        onClick = {
+                            onNavigationEvent(LoginNavigationEvent.NavigateToRegister)
+                        },
+                        modifier = Modifier.testTag("registerButton")
+                    ) {
+                        Text(
+                            text = "Criar conta",
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontSize = 14.sp
+                        )
+                    }
+
+                    TextButton(
+                        onClick = {
+                            onNavigationEvent(LoginNavigationEvent.NavigateToSettings)
+                        },
+                        modifier = Modifier.testTag("settingsButton")
+                    ) {
+                        Text(
+                            text = "Configurações",
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                            fontSize = 12.sp
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.height(dimensionResource(R.dimen.medium_space_betwing_elements)))
             }

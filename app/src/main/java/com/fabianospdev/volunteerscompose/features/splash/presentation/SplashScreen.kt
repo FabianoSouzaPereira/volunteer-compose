@@ -18,12 +18,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import com.fabianospdev.volunteerscompose.core.routes.Routes
 import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(navController: NavHostController) {
+fun SplashScreen(onNavigationEvent: (SplashNavigationEvent) -> Unit) {
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -36,7 +34,7 @@ fun SplashScreen(navController: NavHostController) {
                 .verticalScroll(rememberScrollState())
         ) {
             SplashContent(
-                navController = navController,
+                onNavigationEvent = onNavigationEvent,
                 name = "Android",
                 modifier = Modifier
                     .fillMaxSize()
@@ -48,16 +46,14 @@ fun SplashScreen(navController: NavHostController) {
 
 @Composable
 fun SplashContent(
-    navController: NavHostController,
+    onNavigationEvent: (SplashNavigationEvent) -> Unit,
     name: String,
     modifier: Modifier = Modifier
 ) {
 
     LaunchedEffect(Unit) {
         delay(4000)
-        navController.navigate(Routes.LOGIN) {
-            popUpTo(Routes.SPLASH) { inclusive = true } // remove a splash do back stack
-        }
+        onNavigationEvent(SplashNavigationEvent.NavigateToLogin)
     }
 
     Column(

@@ -4,6 +4,8 @@ package com.fabianospdev.volunteerscompose.features.login.presentation.states
 sealed class LoginNavigationEvent {
     object NavigateToHome : LoginNavigationEvent()
     object NavigateToSettings : LoginNavigationEvent()
+    object NavigateToForgotPassword : LoginNavigationEvent()
+    object NavigateToRegister : LoginNavigationEvent()
     object NavigateBack : LoginNavigationEvent()
     data class NavigateToRoute(val route: String) : LoginNavigationEvent()
 }

@@ -2,7 +2,6 @@ package com.fabianospdev.volunteerscompose.features.login.presentation.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,15 +22,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
-import com.fabianospdev.volunteerscompose.features.login.presentation.LoginViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun ShowPopup(
-    viewModel: LoginViewModel,
+fun ShowLoginSuccessPopup(
     message: String,
     onDismiss: () -> Unit,
-    imageResId: Int
+    imageResId: Int,
+    autoDismiss: Boolean = true,
+    autoDismissTime: Long = 3000,
+    onAutoDismiss: (() -> Unit)? = null
 ) {
     Popup(
         alignment = Alignment.Center,
@@ -49,31 +49,28 @@ fun ShowPopup(
                     .background(MaterialTheme.colorScheme.surface)
                     .padding(24.dp)
                     .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
                     painter = painterResource(id = imageResId),
                     contentDescription = "Popup Image",
                     modifier = Modifier
                         .size(160.dp)
-                        .align(Alignment.CenterHorizontally)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Box(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = message,
-                        modifier = Modifier.fillMaxWidth(),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center
-                    )
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                LaunchedEffect(Unit) {
-                    delay(3000)
-                    viewModel.clearInputFields()
-                    onDismiss()
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center
+                )
+
+                if (autoDismiss) {
+                    LaunchedEffect(Unit) {
+                        delay(autoDismissTime)
+                        onAutoDismiss?.invoke()
+                        onDismiss()
+                    }
                 }
             }
         }

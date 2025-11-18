@@ -1,17 +1,35 @@
 package com.fabianospdev.volunteerscompose.features.settings.presentation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
+import com.fabianospdev.volunteerscompose.features.settings.presentation.states.SettingsNavigationEvent
 
 @Composable
-fun SettingsRoute(navController: NavHostController) {
+fun SettingsRoute(onNavigationEvent: (SettingsNavigationEvent) -> Unit) {
     val viewModel: SettingsViewModel = hiltViewModel()
-    val state = viewModel.state.collectAsState().value
+    val state by viewModel.state.collectAsState()
+    val isDarkModeEnabled by viewModel.isDarkModeEnabled.collectAsState()
+    val notificationsEnabled by viewModel.notificationsEnabled.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvents.collect { event ->
+            onNavigationEvent(event)
+        }
+    }
 
     SettingsScreen(
         state = state,
-        navController = navController
+        isDarkModeEnabled = isDarkModeEnabled,
+        notificationsEnabled = notificationsEnabled,
+        onDarkModeToggle = viewModel::onDarkModeToggle,
+        onNotificationsToggle = viewModel::onNotificationsToggle,
+        onNavigateBack = viewModel::onNavigateBack,
+        onNavigateToProfile = viewModel::onNavigateToProfile,
+        onNavigateToAbout = viewModel::onNavigateToAbout,
+        onLogout = viewModel::onLogout,
+        onRetry = viewModel::onRetry
     )
 }
