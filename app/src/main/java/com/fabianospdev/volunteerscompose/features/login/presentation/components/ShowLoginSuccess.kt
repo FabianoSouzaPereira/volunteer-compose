@@ -28,15 +28,7 @@ import com.fabianospdev.volunteerscompose.ui.theme.progressIndicatorColor
 import kotlinx.coroutines.delay
 
 @Composable
-fun ShowLoginSuccess(
-    navController: NavHostController
-) {
-    LaunchedEffect(key1 = Unit) {
-        delay(timeMillis = 3000)
-        navController.navigate(route = "home") {
-            popUpTo(route = "login") { inclusive = true }
-        }
-    }
+fun ShowLoginSuccess() {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -64,10 +56,5 @@ fun ShowLoginSuccess(
 @Preview(showBackground = true)
 @Composable
 fun ShowLoginSuccessPreview() {
-    val context = LocalContext.current
-    val navController = NavHostController(context)
-
-    ShowLoginSuccess(
-        navController = navController
-    )
+    ShowLoginSuccess()
 }

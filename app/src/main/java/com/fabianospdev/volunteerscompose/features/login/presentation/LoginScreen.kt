@@ -1,5 +1,6 @@
 package com.fabianospdev.volunteerscompose.features.login.presentation
 
+import android.R.attr.password
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -23,67 +24,46 @@ import com.fabianospdev.volunteerscompose.features.login.presentation.components
 import com.fabianospdev.volunteerscompose.features.login.presentation.components.ShowLoginIdle
 import com.fabianospdev.volunteerscompose.features.login.presentation.components.ShowLoginLoading
 import com.fabianospdev.volunteerscompose.features.login.presentation.components.ShowLoginSuccess
+import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginFormState
+import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginNavigationEvent
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginState
+import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginViewState
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.toErrorType
 import com.fabianospdev.volunteerscompose.ui.theme.BaseAppTheme
 
 @Composable
 fun LoginScreen(
-    state: LoginState,
-    navController: NavHostController,
-    username: String,
-    password: String,
-    usernameError: String?,
-    passwordError: String?,
-    isFormValid: Boolean,
+    viewState: LoginViewState, // ✅ Recebe o estado consolidado
     onLoginClick: () -> Unit,
     onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onTogglePasswordVisibility: () -> Unit,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    onNavigationEvent: (LoginNavigationEvent) -> Unit = {}
 ) {
-    var showPassword by remember { mutableStateOf(false) }
-    val focusRequester = remember { FocusRequester() }
-    val keyboardController = LocalSoftwareKeyboardController.current
+    // Extrai os valores do viewState
+    val formState = viewState.formState
+    val screenState = viewState.screenState
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-
-            when (val s = state) {
-
-                is LoginState.LoginLoading -> {
-                    ShowLoginLoading(navController)
-                }
-
+            when (val state = screenState) {
+                is LoginState.LoginLoading -> ShowLoginLoading()
                 is LoginState.LoginIdle -> {
                     ShowLoginIdle(
-                        username = username,
-                        password = password,
-                        usernameError = usernameError,
-                        passwordError = passwordError,
-                        showPassword = showPassword,
-                        isFormValid = isFormValid,
-                        focusRequester = focusRequester,
-                        keyboardController = keyboardController,
+                        formState = formState,
                         onLoginClick = onLoginClick,
                         onUsernameChange = onUsernameChange,
                         onPasswordChange = onPasswordChange,
-                        onTogglePasswordVisibility = {
-                            showPassword = !showPassword
-                            onTogglePasswordVisibility()
-                        }
+                        onTogglePasswordVisibility = onTogglePasswordVisibility,
+                        onNavigationEvent = onNavigationEvent
                     )
                 }
-
-                is LoginState.LoginSuccess -> {
-                    ShowLoginSuccess(navController)
-                }
-
+                is LoginState.LoginSuccess -> ShowLoginSuccess()
                 is LoginState.LoginError,
                 is LoginState.LoginNoConnection,
                 is LoginState.LoginTimeoutError,
@@ -91,18 +71,18 @@ fun LoginScreen(
                 is LoginState.LoginValidationError,
                 is LoginState.LoginUnknown -> {
 
-                    val message = when (s) {
-                        is LoginState.LoginError -> s.error
-                        is LoginState.LoginNoConnection -> s.message
-                        is LoginState.LoginTimeoutError -> s.message
-                        is LoginState.LoginUnauthorized -> s.message
-                        is LoginState.LoginValidationError -> s.message
-                        is LoginState.LoginUnknown -> s.message
+                    val message = when (state) {
+                        is LoginState.LoginError -> state.error
+                        is LoginState.LoginNoConnection -> state.message
+                        is LoginState.LoginTimeoutError -> state.message
+                        is LoginState.LoginUnauthorized -> state.message
+                        is LoginState.LoginValidationError -> state.message
+                        is LoginState.LoginUnknown -> state.message
                         else -> stringResource(R.string.erro_desconhecido)
                     }
 
                     ShowErrorScreen(
-                        type = s.toErrorType(),
+                        type = state.toErrorType(),
                         message = message,
                         onRetry = onRetry
                     )
@@ -112,24 +92,23 @@ fun LoginScreen(
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
+    val viewState = LoginViewState(
+        formState = LoginFormState(),
+        screenState = LoginState.LoginIdle
+    )
+
     BaseAppTheme {
         LoginScreen(
-            state = LoginState.LoginIdle,
-            navController = rememberNavController(),
-            username = "Pablo",
-            password = "123456",
-            usernameError = null,
-            passwordError = null,
-            isFormValid = true,
+            viewState = viewState,
             onLoginClick = { },
             onUsernameChange = {},
             onPasswordChange = {},
             onTogglePasswordVisibility = {},
-            onRetry = {}
+            onRetry = {},
+            onNavigationEvent = {}
         )
     }
 }

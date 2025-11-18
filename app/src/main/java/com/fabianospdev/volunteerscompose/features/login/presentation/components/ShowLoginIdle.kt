@@ -1,7 +1,5 @@
 package com.fabianospdev.volunteerscompose.features.login.presentation.components
 
-import android.R.attr.tag
-import android.R.attr.top
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,7 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextFieldDefaults.contentPadding
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -39,18 +36,13 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.ColorPainter
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -63,28 +55,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fabianospdev.volunteerscompose.R
-import com.android.volley.toolbox.ImageRequest
 import com.fabianospdev.volunteerscompose.core.utils.LoadFontsFamily
+import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginFormState
+import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginNavigationEvent
+import com.fabianospdev.volunteerscompose.features.login.presentation.utils.isRunningRoboletric
 import com.fabianospdev.volunteerscompose.ui.theme.appGradient
-import com.fabianospdev.volunteerscompose.features.login.presentation.utils.*
-
 
 @Composable
 fun ShowLoginIdle(
-    username: String,
-    password: String,
-    usernameError: String?,
-    passwordError: String?,
-    showPassword: Boolean,
-    isFormValid: Boolean,
-    focusRequester: FocusRequester,
-    keyboardController: SoftwareKeyboardController?,
+    formState: LoginFormState,
     onLoginClick: () -> Unit,
     onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onTogglePasswordVisibility: () -> Unit
-)
-{
+    onTogglePasswordVisibility: () -> Unit,
+    focusRequester: FocusRequester,
+    keyboardController: SoftwareKeyboardController?,
+    onNavigationEvent: (LoginNavigationEvent) -> Unit = {}
+) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.onSurface,
@@ -95,16 +82,15 @@ fun ShowLoginIdle(
             modifier = Modifier
                 .fillMaxSize()
                 .background(brush = MaterialTheme.appGradient)
-        )
-        {
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(all= 20.dp),
+                    .padding(all = 20.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                if(!isRunningRoboletric()) {
+                if (!isRunningRoboletric()) {
                     Image(
                         painter = painterResource(id = R.drawable.logo),
                         contentDescription = "Mindflow logo",
@@ -121,6 +107,7 @@ fun ShowLoginIdle(
                     )
                 }
                 Spacer(modifier = Modifier.height(dimensionResource(R.dimen.large_space_betwing_elements)))
+
                 Text(
                     modifier = Modifier.testTag("LoginIdleTitle"),
                     text = stringResource(R.string.login),
@@ -133,11 +120,13 @@ fun ShowLoginIdle(
                     fontStyle = FontStyle.Normal
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(R.dimen.medium_space_betwing_elements)))
+
+
                 TextField(
-                    value = username,
+                    value = formState.username,
                     onValueChange = onUsernameChange,
                     label = { Text(stringResource(R.string.email)) },
-                    isError = usernameError != null,
+                    isError = formState.usernameError != null,
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
@@ -153,7 +142,7 @@ fun ShowLoginIdle(
                         .padding(horizontal = 30.dp, vertical = 6.dp)
                         .border(
                             width = dimensionResource(R.dimen.textfield_border_size),
-                            color = if (usernameError != null) Color.Red else MaterialTheme.colorScheme.onPrimary,
+                            color = if (formState.usernameError != null) Color.Red else MaterialTheme.colorScheme.onPrimary,
                             shape = RoundedCornerShape(dimensionResource(R.dimen.textfield_rounded_corner_shape))
                         )
                         .clip(RoundedCornerShape(dimensionResource(R.dimen.textfield_rounded_corner_shape)))
@@ -171,9 +160,11 @@ fun ShowLoginIdle(
                     },
                     maxLines = 1
                 )
-                if (usernameError != null) {
+
+
+                if (formState.usernameError != null) {
                     Text(
-                        text = usernameError,
+                        text = formState.usernameError,
                         color = Color.Red,
                         fontSize = 12.sp,
                         modifier = Modifier
@@ -182,12 +173,15 @@ fun ShowLoginIdle(
                             .padding(start = 32.dp, bottom = 4.dp)
                     )
                 }
+
                 Spacer(modifier = Modifier.height(dimensionResource(R.dimen.medium_space_betwing_elements)))
+
+
                 TextField(
-                    value = password,
+                    value = formState.password,
                     onValueChange = onPasswordChange,
                     label = { Text(stringResource(R.string.password)) },
-                    isError = passwordError != null,
+                    isError = formState.passwordError != null,
                     keyboardOptions = KeyboardOptions.Default.copy(
                         imeAction = ImeAction.Done
                     ),
@@ -196,7 +190,7 @@ fun ShowLoginIdle(
                             keyboardController?.hide()
                         }
                     ),
-                    visualTransformation = if (showPassword) VisualTransformation.None else
+                    visualTransformation = if (formState.showPassword) VisualTransformation.None else
                         PasswordVisualTransformation(),
                     textStyle = TextStyle(
                         fontSize = 16.sp,
@@ -210,7 +204,7 @@ fun ShowLoginIdle(
                         .padding(horizontal = 30.dp, vertical = 6.dp)
                         .border(
                             width = dimensionResource(R.dimen.textfield_border_size),
-                            color = if (passwordError != null) Color.Red else MaterialTheme.colorScheme.onPrimary,
+                            color = if (formState.passwordError != null) Color.Red else MaterialTheme.colorScheme.onPrimary,
                             shape = RoundedCornerShape(16.dp)
                         )
                         .clip(RoundedCornerShape(16.dp))
@@ -228,35 +222,36 @@ fun ShowLoginIdle(
                         )
                     },
                     leadingIcon = {
-                        isFormValid
                         Icon(
-                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_check_circle),
+                            painter = painterResource(id = R.drawable.ic_check_circle),
                             contentDescription = "Check",
-                            tint = if (isFormValid) Color.Green else if (passwordError != null) Color.Red else Color.Gray
+                            tint = if (formState.isFormValid) Color.Green else if (formState.passwordError != null) Color.Red else Color.Gray
                         )
                     },
                     trailingIcon = {
                         IconButton(onClick = onTogglePasswordVisibility) {
-                            val icon: ImageVector = if (showPassword) {
-                                ImageVector.vectorResource(id = R.drawable.baseline_remove_red_eye_24)
+                            val iconId = if (formState.showPassword) {
+                                R.drawable.baseline_remove_red_eye_24
                             } else {
-                                ImageVector.vectorResource(id = R.drawable.baseline_visibility_off_24)
+                                R.drawable.baseline_visibility_off_24
                             }
                             Icon(
-                                imageVector = icon,
-                                contentDescription = if (showPassword)
+                                painter = painterResource(id = iconId),
+                                contentDescription = if (formState.showPassword)
                                     stringResource(id = R.string.hide_password)
                                 else
                                     stringResource(id = R.string.show_password),
-                                tint = if (passwordError != null) Color.Red else if (showPassword) Color.Blue else Color.Gray
+                                tint = if (formState.passwordError != null) Color.Red else if (formState.showPassword) Color.Blue else Color.Gray
                             )
                         }
                     },
                     maxLines = 1
                 )
-                if (passwordError != null) {
+
+
+                if (formState.passwordError != null) {
                     Text(
-                        text = passwordError,
+                        text = formState.passwordError,
                         color = Color.Red,
                         fontSize = 12.sp,
                         modifier = Modifier
@@ -264,10 +259,13 @@ fun ShowLoginIdle(
                             .padding(start = 32.dp, bottom = 4.dp)
                     )
                 }
+
                 Spacer(modifier = Modifier.height(dimensionResource(R.dimen.large_space_betwing_elements)))
+
+
                 Button(
                     onClick = { onLoginClick() },
-                    enabled = isFormValid,
+                    enabled = formState.isFormValid,
                     interactionSource = remember { MutableInteractionSource() },
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp),
                     shape = MaterialTheme.shapes.large,
@@ -283,7 +281,7 @@ fun ShowLoginIdle(
                         .padding(horizontal = 16.dp, vertical = 20.dp)
                         .clip(shape = RoundedCornerShape(dimensionResource(R.dimen.button_rounded_corner_shape)))
                         .background(
-                            brush = if (!isFormValid) Brush.verticalGradient(
+                            brush = if (!formState.isFormValid) Brush.verticalGradient(
                                 listOf(
                                     MaterialTheme.colorScheme.surfaceVariant,
                                     MaterialTheme.colorScheme.surfaceVariant
@@ -293,7 +291,7 @@ fun ShowLoginIdle(
                         .border(
                             BorderStroke(
                                 width = dimensionResource(R.dimen.button_border_size),
-                                color = if (!isFormValid) MaterialTheme.colorScheme.outlineVariant else
+                                color = if (!formState.isFormValid) MaterialTheme.colorScheme.outlineVariant else
                                     MaterialTheme.colorScheme.onPrimary
                             ),
                             shape = RoundedCornerShape(dimensionResource(R.dimen.button_rounded_corner_shape))
@@ -303,7 +301,7 @@ fun ShowLoginIdle(
                     Text(
                         text = stringResource(R.string.login),
                         style = TextStyle(fontWeight = FontWeight.Bold),
-                        color = if (!isFormValid) MaterialTheme.colorScheme.outline else
+                        color = if (!formState.isFormValid) MaterialTheme.colorScheme.outline else
                             MaterialTheme.colorScheme.onPrimary
                     )
                 }
@@ -318,18 +316,22 @@ fun ShowLoginIdle(
 fun ShowLoginIdlePreview() {
     val focusRequester = remember { FocusRequester() }
 
-    ShowLoginIdle(
-        username = "",
-        password = "",
+    val sampleFormState = LoginFormState(
+        username = "user@example.com",
+        password = "password123",
         usernameError = null,
         passwordError = null,
-        showPassword = false,
-        isFormValid = false,
-        focusRequester = focusRequester,
-        keyboardController = null,
+        isFormValid = true,
+        showPassword = false
+    )
+
+    ShowLoginIdle(
+        formState = sampleFormState,
         onLoginClick = { },
         onUsernameChange = {},
         onPasswordChange = {},
-        onTogglePasswordVisibility = {}
+        onTogglePasswordVisibility = {},
+        focusRequester = focusRequester,
+        keyboardController = null
     )
 }

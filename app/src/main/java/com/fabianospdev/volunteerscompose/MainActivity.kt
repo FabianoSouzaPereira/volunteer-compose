@@ -12,18 +12,19 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.fabianospdev.volunteerscompose.core.routes.NavigationHelper
 import com.fabianospdev.volunteerscompose.core.routes.Routes
 import com.fabianospdev.volunteerscompose.features.home.presentation.HomeRoute
 import com.fabianospdev.volunteerscompose.features.login.presentation.LoginRoute
+import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginNavigationEvent
 import com.fabianospdev.volunteerscompose.features.settings.presentation.SettingsRoute
 import com.fabianospdev.volunteerscompose.features.splash.presentation.SplashRoute
 import com.fabianospdev.volunteerscompose.ui.theme.BaseAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private lateinit var navController: NavHostController
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -33,22 +34,50 @@ class MainActivity : ComponentActivity() {
                 tonalElevation = 5.dp
             ) {
                 BaseAppTheme {
-                    navController = rememberNavController()
+                    val navController = rememberNavController()
+
                     NavHost(navController = navController, startDestination = Routes.SPLASH) {
                         composable(Routes.SPLASH) {
-                            SplashRoute(navController = navController)
+                            SplashRoute { event ->
+                                handleNavigationEvent(event, navController)
+                            }
                         }
                         composable(Routes.LOGIN) {
-                            LoginRoute(navController = navController)
+                            LoginRoute { event ->
+                                handleNavigationEvent(event, navController)
+                            }
                         }
                         composable(Routes.HOME) {
-                            HomeRoute(navController = navController)
+                            HomeRoute { event ->
+                                handleNavigationEvent(event, navController)
+                            }
                         }
                         composable(Routes.SETTINGS) {
-                            SettingsRoute(navController = navController)
+                            SettingsRoute { event ->
+                                handleNavigationEvent(event, navController)
+                            }
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun handleNavigationEvent(event: LoginNavigationEvent, navController: NavHostController) {
+        when (event) {
+            is LoginNavigationEvent.NavigateToHome -> {
+                navController.navigate(Routes.HOME) {
+                    popUpTo(Routes.LOGIN) { inclusive = true }
+                }
+            }
+            is LoginNavigationEvent.NavigateToSettings -> {
+                navController.navigate(Routes.SETTINGS)
+            }
+            is LoginNavigationEvent.NavigateBack -> {
+                navController.popBackStack()
+            }
+            is LoginNavigationEvent.NavigateToRoute -> {
+                navController.navigate(event.route)
             }
         }
     }

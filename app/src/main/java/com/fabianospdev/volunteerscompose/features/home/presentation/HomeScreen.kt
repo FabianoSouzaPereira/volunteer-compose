@@ -1,5 +1,6 @@
 package com.fabianospdev.volunteerscompose.features.home.presentation
 
+import android.R.attr.name
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,11 +22,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.fabianospdev.volunteerscompose.R
 import com.fabianospdev.volunteerscompose.features.login.presentation.components.ShowErrorScreen
+import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginNavigationEvent
 
 @Composable
 fun HomeScreen(
     state: HomeState,
-    navController: NavHostController,
+    onNavigationEvent: (LoginNavigationEvent) -> Unit = {},
     onRetry: () -> Unit
 ) {
 
@@ -48,7 +50,7 @@ fun HomeScreen(
 
                 is HomeState.HomeIdle -> {
                     HomeContent(
-                        navController = navController,
+                        onNavigationEvent,
                         name = "Android",
                         modifier = Modifier
                             .fillMaxSize()
@@ -58,7 +60,7 @@ fun HomeScreen(
 
                 is HomeState.HomeSuccess -> {
                     HomeContent(
-                        navController = navController,
+                        onNavigationEvent = onNavigationEvent,
                         name = "Android",
                         modifier = Modifier
                             .fillMaxSize()
@@ -97,7 +99,7 @@ fun HomeScreen(
 
 @Composable
 fun HomeContent(
-    navController: NavHostController,
+    onNavigationEvent: (LoginNavigationEvent) -> Unit = {},
     name: String,
     modifier: Modifier = Modifier
 ) {

@@ -1,33 +1,40 @@
 package com.fabianospdev.volunteerscompose.features.login.presentation
 
+import LoginViewModel
+import android.R.attr.password
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
+import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginNavigationEvent
 
 @Composable
-fun LoginRoute(navController: NavHostController) {
+fun LoginRoute(onNavigationEvent: (LoginNavigationEvent) -> Unit) {
     val viewModel: LoginViewModel = hiltViewModel()
-    val username by viewModel.username
-    val password by viewModel.password
-    val usernameError by viewModel.usernameError
-    val passwordError by viewModel.passwordError
-    val isFormValid by viewModel.isFormValid
-    val state = viewModel.state.collectAsState().value
+    val viewState by viewModel.viewState.collectAsState()
+
+    /** Coletar eventos de navegação */
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvents.collect { event ->
+            onNavigationEvent(event)
+        }
+    }
 
     LoginScreen(
-        state = state,
-        navController = navController,
-        username = username,
-        password = password,
-        usernameError = usernameError,
-        passwordError = passwordError,
-        isFormValid = isFormValid,
+        viewState = viewState,
         onLoginClick = viewModel::onLoginClick,
         onUsernameChange = viewModel::onUsernameChange,
         onPasswordChange = viewModel::onPasswordChange,
         onTogglePasswordVisibility = viewModel::onTogglePasswordVisibility,
-        onRetry = viewModel::onRetry
+        onRetry = viewModel::onRetry,
+        onNavigationEvent = { event ->
+            when (event) {
+                is LoginNavigationEvent.NavigateToSettings -> {
+                    viewModel.onNavigateToSettings()
+                }
+                else -> onNavigationEvent(event)
+            }
+        }
     )
 }
