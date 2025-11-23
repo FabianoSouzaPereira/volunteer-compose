@@ -155,7 +155,7 @@ fun LoginScreen(
         }
    }
 ```
-
+---
 
 ## Por que usar DispatcherProvider e infraestrutura de Dispatchers customizados?
 
@@ -212,7 +212,7 @@ Ela abstrai Dispatchers.Main, Dispatchers.IO, etc., permitindo que o código “
 
 **Benefício:**
 
-✔ Desacoplamento total entre lógica de negócio e detalhes de threading.
+<span style="color:green;">✔</span> Desacoplamento total entre lógica de negócio e detalhes de threading.
 
 
 ___
@@ -223,7 +223,7 @@ Módulo Hilt que injeta o DispatcherProvider padrão em produção.
 
 **Benefício:**
 
-✔ No app real, tudo usa os dispatchers corretos, sem configuração extra.<br><br>
+<span style="color:green;">✔</span> No app real, tudo usa os dispatchers corretos, sem configuração extra.<br><br>
 
 ___
 
@@ -233,13 +233,13 @@ Implementação fake usada em testes, onde todos os dispatchers apontam para um 
 
 **Benefícios:**
 
-✔ Testes totalmente controláveis
+<span style="color:green;">✔</span> Testes totalmente controláveis
 
-✔ Sem threads reais
+<span style="color:green;">✔</span> Sem threads reais
 
-✔ Determinismo total durante runTest
+<span style="color:green;">✔</span> Determinismo total durante runTest
 
-✔ Testes rodam muito mais rápido e nunca “intermitentes”<br><br>
+<span style="color:green;">✔</span> Testes rodam muito mais rápido e nunca “intermitentes”<br><br>
 
 ___
 
@@ -250,33 +250,38 @@ Uma Test Rule que troca o Dispatchers.Main por um `TestDispatcher` durante os te
 
 **Benefícios:**
 
-✔ Permite testar ViewModels que usam código com Main dispatcher
+<span style="color:green;">✔</span> Permite testar ViewModels que usam código com Main dispatcher
 
-✔ Elimina erros “Module with the Main dispatcher had not been initialized”
+<span style="color:green;">✔</span> Elimina erros “Module with the Main dispatcher had not been initialized”
 
-✔ Garante que Dispatchers.Main se comporte de forma síncrona no teste
+<span style="color:green;">✔</span> Garante que Dispatchers.Main se comporte de forma síncrona no teste
 
 LoginViewModel usando DispatcherProvider
 
 Agora o ViewModel recebe `DispatcherProvider via Hilt`, e não mais um dispatcher fixo.
+<br><br>
 
 **Benefícios:**
 
-✔ O ViewModel fica desacoplado do Android
-✔ Pode ser testado sem Android Framework
-✔ Pode trocar de threading no futuro sem refatorar nada
-✔ Código mais limpo, previsível e escalável
+<span style="color:green;">✔</span> O ViewModel fica desacoplado do Android 
 
-Testes usando TestDispatcherProvider
+<span style="color:green;">✔</span> Pode ser testado sem Android Framework 
+
+<span style="color:green;">✔</span> Pode trocar de threading no futuro sem refatorar nada 
+
+<span style="color:green;">✔</span> Código mais limpo, previsível e escalável 
+<br><br>
+
+#### Testes usando TestDispatcherProvider
 
 Nos testes, o ViewModel é criado com um dispatcher totalmente controlável.
 
 ***Benefícios:***
 
-✔ advanceUntilIdle() funciona em todos os cenários
-✔ delay() pode ser avançado manualmente
-✔ Testes assíncronos ficam 100% determinísticos
-✔ Elimina flakiness ("às vezes passa, às vezes falha")
+<span style="color:green;">✔</span> advanceUntilIdle() funciona em todos os cenários
+<span style="color:green;">✔</span> delay() pode ser avançado manualmente
+<span style="color:green;">✔</span> Testes assíncronos ficam 100% determinísticos
+<span style="color:green;">✔</span> Elimina flakiness ("às vezes passa, às vezes falha")
 
 ## Conclusão
 
