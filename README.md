@@ -1,17 +1,20 @@
-# 🏗️ ARQUITETURA GERAL - PONTOS FORTES
+# 🏗️ ARQUITETURA GERAL
 
-📁 domain/          → Entidades, UseCases
-📁 data/            → Repositórios, Fontes de Dados  
-📁 presentation/    → ViewModels, Estados, Eventos
-📁 core/            → Utilitários, Rotas, DI
+#### **VISÃO GERAL DA ARQUITETURA**
 
-✅  Separação de Concerns Excelente
+    📁 domain/          → Entidades, UseCases 
+    📁 data/            → Repositórios, Fontes de Dados  
+    📁 presentation/    → ViewModels, Estados, Eventos
+    📁 core/            → Utilitários, Rotas, DI
+
+#### PRINCIPAIS CARACTERÍSTICAS
+**Separação de Concerns Excelente**
 - ViewModel: Apenas lógica de negócio
 - Screen/Route: Apenas UI e composição
 - MainActivity: Apenas navegação
 - Components: Componentes reutilizáveis
 
-✅ Padrão MVI/State Management Robusto
+### **Padrão MVI/State Management Robusto**
 
 ```kotlin
 // Estados bem definidos
@@ -22,15 +25,16 @@ data class LoginViewState
 sealed class LoginNavigationEvent
 ```
 
-✅ Reatividade com Flow/StateFlow
+### **Reatividade com Flow/StateFlow**
 ```kotlin
 // Boas práticas de estado reativo
 val viewState: StateFlow<LoginViewState> = _viewState.asStateFlow()
 val navigationEvents: SharedFlow<LoginNavigationEvent>
 ```
 
-🚀 ESCALABILIDADE - PRONTO PARA CRESCER
-✅ Estrutura Modularizável
+### **ESCALABILIDADE - PRONTO PARA CRESCER**
+
+**Estrutura Modularizável**
 ```kotlin
 // Fácil de extrair para módulos futuros:
 :feature:login
@@ -40,7 +44,7 @@ val navigationEvents: SharedFlow<LoginNavigationEvent>
 :core:design
 ```
 
-✅ Injeção de Dependência com Hilt
+**Injeção de Dependência com Hilt**
 ```kotlin
 @HiltViewModel
 class LoginViewModel @Inject constructor(
@@ -49,7 +53,7 @@ private val retryController: RetryController
 )
 ```
 
-✅ Navegação Tipada e Segura
+**Navegação Tipada e Segura**
 ```kotlin
 sealed class LoginNavigationEvent {
 object NavigateToHome : LoginNavigationEvent()
@@ -59,7 +63,7 @@ object NavigateToRegister : LoginNavigationEvent()
 ```
 
 ## 📊 ANÁLISE POR CATEGORIA
-✅ Testabilidade (MUITO BOA)
+### **Testabilidade (MUITO BOA)**
 
 ```kotlin
 class LoginViewModelTest {
@@ -70,19 +74,19 @@ class LoginViewModelTest {
 }
 ```
 
-✅ Manutenibilidade (EXCELENTE)
+**Manutenibilidade (EXCELENTE)**
 - Código bem organizado
 - Nomenclatura clara
 - Responsabilidades separadas
 
-✅ Consistência Arquitetural
+**Consistência Arquitetural**
 - Padrão aplicado uniformemente
 - Mesma estrutura em todas as features
 - Fácil para novos devs entenderem
 
-## 🎨 DETALHES DE IMPLEMENTAÇÃO SÓLIDOS
+### 🎨 DETALHES DE IMPLEMENTAÇÃO SÓLIDOS
 
-### ✅ Tratamento de Erros Robusto
+#### Tratamento de Erros Robusto
 
 ```kotlin
 sealed class LoginState {
@@ -93,7 +97,7 @@ sealed class LoginState {
 }
 ```
 
-### ✅ Gestão de Estado Completa
+#### Gestão de Estado Completa
 
 ```kotlin
 data class LoginViewState(
@@ -101,7 +105,7 @@ data class LoginViewState(
     val screenState: LoginState         // Estado da tela
 )
 ```
-### ✅ UI com Compose Moderno
+#### UI com Compose Moderno
 
 ```kotlin
 // Boas práticas do Compose
@@ -113,9 +117,9 @@ fun LoginScreen(
 )
 ```
 
-## 🔧 ÁREAS DE MELHORIA (EVOLUÇÃO NATURAL)
+### 🔧 ÁREAS DE MELHORIA (EVOLUÇÃO NATURAL)
 
-### 1. Modularização (Futuro)
+#### 1. Modularização (Futuro)
 
 ```kotlin
    // Quando o app crescer:
@@ -126,7 +130,7 @@ fun LoginScreen(
    :feature:home
 ```
 
-### 2. Testes Automatizados
+#### 2. Testes Automatizados
 ```kotlin
    // Próximo passo natural
    class LoginRouteTest {
@@ -138,7 +142,7 @@ fun LoginScreen(
    }
 ```
 
-### 3. Analytics/Logging
+#### 3. Analytics/Logging
 ```kotlin
    // Pode adicionar posteriormente
    class AnalyticsNavigator(
@@ -153,7 +157,7 @@ fun LoginScreen(
 ```
 
 
-# Por que usar DispatcherProvider e infraestrutura de Dispatchers customizados?
+## Por que usar DispatcherProvider e infraestrutura de Dispatchers customizados?
 
 | Arquivo                     | Função                                                               |
 |:----------------------------|:---------------------------------------------------------------------|
