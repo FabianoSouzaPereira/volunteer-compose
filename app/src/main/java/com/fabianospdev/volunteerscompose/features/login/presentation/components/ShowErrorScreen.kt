@@ -60,7 +60,7 @@ fun ShowErrorScreen(
         Button(
             onClick = onRetry,
             modifier = Modifier
-                .testTag(tag = "LoginErrorButton")
+                .testTag(tag = "RetryButton")
                 .width(width = dimensionResource(R.dimen.button_width_medium))
                 .padding(all = dimensionResource(R.dimen.button_padding))
                 .clip(shape = RoundedCornerShape(dimensionResource(R.dimen.button_rounded_corner_shape)))
@@ -82,7 +82,7 @@ fun ShowErrorScreen(
                 ),
             contentPadding = ButtonDefaults.ContentPadding
         ) {
-            Text("Tentar novamente")
+            Text(text ="Tentar novamente", modifier = Modifier.testTag("RetryText"))
         }
     }
 }

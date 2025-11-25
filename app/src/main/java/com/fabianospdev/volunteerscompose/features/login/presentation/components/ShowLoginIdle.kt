@@ -230,7 +230,7 @@ fun ShowLoginIdle(
                         )
                     },
                     trailingIcon = {
-                        IconButton(onClick = onTogglePasswordVisibility) {
+                        IconButton(onClick = onTogglePasswordVisibility, modifier = Modifier.testTag("TogglePasswordVisibility")) {
                             val iconId = if (formState.showPassword) {
                                 R.drawable.baseline_remove_red_eye_24
                             } else {

@@ -4,23 +4,19 @@ import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.printToLog
-import androidx.compose.ui.test.printToString
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fabianospdev.volunteerscompose.features.login.domain.entities.LoginResponseEntity
+import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginFormState
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginState
+import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginViewState
 import com.fabianospdev.volunteerscompose.ui.theme.BaseAppTheme
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -38,7 +34,6 @@ class LoginScreenTest {
 
     @Before
     fun setup() {
-
         if (Build.FINGERPRINT == null) {
             val field = Build::class.java.getDeclaredField("FINGERPRINT")
             field.isAccessible = true
@@ -46,23 +41,40 @@ class LoginScreenTest {
         }
     }
 
+    private fun createViewState(
+        screenState: LoginState = LoginState.LoginIdle,
+        formState: LoginFormState = LoginFormState()
+    ): LoginViewState {
+        return LoginViewState(
+            screenState = screenState,
+            formState = formState
+        )
+    }
+
+    private fun createSuccessLoginState(): LoginState.LoginSuccess {
+        return LoginState.LoginSuccess(
+            LoginResponseEntity(
+                id = "1",
+                name = "Fabiano",
+                email = "fabiano@example.com",
+                token = "abc123"
+            )
+        )
+    }
+
     @Test
     fun whenStateIsIdle_shouldShowLoginIdle() {
         composeRule.setContent {
             BaseAppTheme {
                 LoginScreen(
-                    state = LoginState.LoginIdle,
-                    navController = rememberNavController(),
-                    username = "fabiano",
-                    password = "1234",
-                    usernameError = null,
-                    passwordError = null,
-                    isFormValid = true,
+                    viewState = createViewState(screenState = LoginState.LoginIdle),
                     onLoginClick = {},
                     onUsernameChange = {},
                     onPasswordChange = {},
                     onTogglePasswordVisibility = {},
-                    onRetry = {}
+                    onRetry = {},
+                    onClearInputFields = {},
+                    onNavigationEvent = {}
                 )
             }
         }
@@ -75,18 +87,14 @@ class LoginScreenTest {
         composeRule.setContent {
             BaseAppTheme {
                 LoginScreen(
-                    state = LoginState.LoginLoading,
-                    navController = rememberNavController(),
-                    username = "",
-                    password = "",
-                    usernameError = null,
-                    passwordError = null,
-                    isFormValid = false,
+                    viewState = createViewState(screenState = LoginState.LoginLoading),
                     onLoginClick = {},
                     onUsernameChange = {},
                     onPasswordChange = {},
                     onTogglePasswordVisibility = {},
-                    onRetry = {}
+                    onRetry = {},
+                    onClearInputFields = {},
+                    onNavigationEvent = {}
                 )
             }
         }
@@ -97,21 +105,16 @@ class LoginScreenTest {
     @Test
     fun whenStateIsSuccess_shouldShowSuccessScreen() {
         composeRule.setContent {
-            val entity = LoginResponseEntity(id = "1", name = "Fabiano", email = "", token = "abc123")
             BaseAppTheme {
                 LoginScreen(
-                    state = LoginState.LoginSuccess(entity),
-                    navController = rememberNavController(),
-                    username = "",
-                    password = "",
-                    usernameError = null,
-                    passwordError = null,
-                    isFormValid = false,
+                    viewState = createViewState(screenState = createSuccessLoginState()),
                     onLoginClick = {},
                     onUsernameChange = {},
                     onPasswordChange = {},
                     onTogglePasswordVisibility = {},
-                    onRetry = {}
+                    onRetry = {},
+                    onClearInputFields = {},
+                    onNavigationEvent = {}
                 )
             }
         }
@@ -124,18 +127,114 @@ class LoginScreenTest {
         composeRule.setContent {
             BaseAppTheme {
                 LoginScreen(
-                    state = LoginState.LoginError("Erro de rede"),
-                    navController = rememberNavController(),
-                    username = "",
-                    password = "",
-                    usernameError = null,
-                    passwordError = null,
-                    isFormValid = false,
+                    viewState = createViewState(screenState = LoginState.LoginError("Erro de rede")),
                     onLoginClick = {},
                     onUsernameChange = {},
                     onPasswordChange = {},
                     onTogglePasswordVisibility = {},
-                    onRetry = {}
+                    onRetry = {},
+                    onClearInputFields = {},
+                    onNavigationEvent = {}
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("ErrorScreen").assertExists()
+    }
+
+    @Test
+    fun whenStateIsNoConnection_shouldShowErrorScreen() {
+        composeRule.setContent {
+            BaseAppTheme {
+                LoginScreen(
+                    viewState = createViewState(screenState = LoginState.LoginNoConnection("Sem conexão")),
+                    onLoginClick = {},
+                    onUsernameChange = {},
+                    onPasswordChange = {},
+                    onTogglePasswordVisibility = {},
+                    onRetry = {},
+                    onClearInputFields = {},
+                    onNavigationEvent = {}
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("ErrorScreen").assertExists()
+    }
+
+    @Test
+    fun whenStateIsTimeoutError_shouldShowErrorScreen() {
+        composeRule.setContent {
+            BaseAppTheme {
+                LoginScreen(
+                    viewState = createViewState(screenState = LoginState.LoginTimeoutError("Timeout")),
+                    onLoginClick = {},
+                    onUsernameChange = {},
+                    onPasswordChange = {},
+                    onTogglePasswordVisibility = {},
+                    onRetry = {},
+                    onClearInputFields = {},
+                    onNavigationEvent = {}
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("ErrorScreen").assertExists()
+    }
+
+    @Test
+    fun whenStateIsUnauthorized_shouldShowErrorScreen() {
+        composeRule.setContent {
+            BaseAppTheme {
+                LoginScreen(
+                    viewState = createViewState(screenState = LoginState.LoginUnauthorized("Não autorizado")),
+                    onLoginClick = {},
+                    onUsernameChange = {},
+                    onPasswordChange = {},
+                    onTogglePasswordVisibility = {},
+                    onRetry = {},
+                    onClearInputFields = {},
+                    onNavigationEvent = {}
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("ErrorScreen").assertExists()
+    }
+
+    @Test
+    fun whenStateIsValidationError_shouldShowErrorScreen() {
+        composeRule.setContent {
+            BaseAppTheme {
+                LoginScreen(
+                    viewState = createViewState(screenState = LoginState.LoginValidationError("Erro de validação")),
+                    onLoginClick = {},
+                    onUsernameChange = {},
+                    onPasswordChange = {},
+                    onTogglePasswordVisibility = {},
+                    onRetry = {},
+                    onClearInputFields = {},
+                    onNavigationEvent = {}
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("ErrorScreen").assertExists()
+    }
+
+    @Test
+    fun whenStateIsUnknownError_shouldShowErrorScreen() {
+        composeRule.setContent {
+            BaseAppTheme {
+                LoginScreen(
+                    viewState = createViewState(screenState = LoginState.LoginUnknown("Erro desconhecido")),
+                    onLoginClick = {},
+                    onUsernameChange = {},
+                    onPasswordChange = {},
+                    onTogglePasswordVisibility = {},
+                    onRetry = {},
+                    onClearInputFields = {},
+                    onNavigationEvent = {}
                 )
             }
         }
@@ -148,18 +247,14 @@ class LoginScreenTest {
         composeRule.setContent {
             BaseAppTheme {
                 LoginScreen(
-                    state = LoginState.LoginIdle,
-                    navController = rememberNavController(),
-                    username = "",
-                    password = "",
-                    usernameError = null,
-                    passwordError = null,
-                    isFormValid = false,
+                    viewState = createViewState(screenState = LoginState.LoginIdle),
                     onLoginClick = {},
                     onUsernameChange = {},
                     onPasswordChange = {},
                     onTogglePasswordVisibility = {},
-                    onRetry = {}
+                    onRetry = {},
+                    onClearInputFields = {},
+                    onNavigationEvent = {}
                 )
             }
         }
@@ -172,18 +267,14 @@ class LoginScreenTest {
         composeRule.setContent {
             BaseAppTheme {
                 LoginScreen(
-                    state = LoginState.LoginIdle,
-                    navController = rememberNavController(),
-                    username = "",
-                    password = "",
-                    usernameError = null,
-                    passwordError = null,
-                    isFormValid = false,
+                    viewState = createViewState(screenState = LoginState.LoginIdle),
                     onLoginClick = {},
                     onUsernameChange = {},
                     onPasswordChange = {},
                     onTogglePasswordVisibility = {},
-                    onRetry = {}
+                    onRetry = {},
+                    onClearInputFields = {},
+                    onNavigationEvent = {}
                 )
             }
         }
@@ -196,18 +287,14 @@ class LoginScreenTest {
         composeRule.setContent {
             BaseAppTheme {
                 LoginScreen(
-                    state = LoginState.LoginIdle,
-                    navController = rememberNavController(),
-                    username = "",
-                    password = "",
-                    usernameError = null,
-                    passwordError = null,
-                    isFormValid = false,
+                    viewState = createViewState(screenState = LoginState.LoginIdle),
                     onLoginClick = {},
                     onUsernameChange = {},
                     onPasswordChange = {},
                     onTogglePasswordVisibility = {},
-                    onRetry = {}
+                    onRetry = {},
+                    onClearInputFields = {},
+                    onNavigationEvent = {}
                 )
             }
         }
@@ -217,27 +304,32 @@ class LoginScreenTest {
 
     @Test
     fun whenFormIsValid_shouldEnableLoginButton() {
+        val formState = LoginFormState(
+            username = "fabiano",
+            password = "1234",
+            isFormValid = true // Agora usando a propriedade correta
+        )
+
         composeRule.setContent {
-            //BaseAppTheme {
+            BaseAppTheme {
                 Box(Modifier.size(1080.dp, 1920.dp)) {
                     LoginScreen(
-                        state = LoginState.LoginIdle,
-                        navController = rememberNavController(),
-                        username = "fabiano",
-                        password = "1234",
-                        usernameError = null,
-                        passwordError = null,
-                        isFormValid = true,
+                        viewState = createViewState(
+                            screenState = LoginState.LoginIdle,
+                            formState = formState
+                        ),
                         onLoginClick = {},
                         onUsernameChange = {},
                         onPasswordChange = {},
                         onTogglePasswordVisibility = {},
-                        onRetry = {}
+                        onRetry = {},
+                        onClearInputFields = {},
+                        onNavigationEvent = {}
                     )
                 }
-           // }
+            }
         }
-        println(composeRule.onRoot().printToString())
+
         composeRule.onNodeWithTag("LoginButton", useUnmergedTree = true)
             .assertExists()
             .printToLog("DEBUG_TREE")
@@ -247,33 +339,68 @@ class LoginScreenTest {
             .assertIsEnabled()
     }
 
-
-
-
     @Test
-    fun whenClickLoginButton_shouldTriggerCallback() {
-        var clicked = false
+    fun whenFormIsInvalid_shouldDisableLoginButton() {
+        val formState = LoginFormState(
+            username = "",
+            password = "",
+            isFormValid = false // Formulário inválido
+        )
 
         composeRule.setContent {
             BaseAppTheme {
                 Box(Modifier.size(1080.dp, 1920.dp)) {
                     LoginScreen(
-                        state = LoginState.LoginIdle,
-                        navController = rememberNavController(),
-                        username = "fabiano",
-                        password = "1234",
-                        usernameError = null,
-                        passwordError = null,
-                        isFormValid = true,
-                        onLoginClick = { clicked = true },
+                        viewState = createViewState(
+                            screenState = LoginState.LoginIdle,
+                            formState = formState
+                        ),
+                        onLoginClick = {},
                         onUsernameChange = {},
                         onPasswordChange = {},
                         onTogglePasswordVisibility = {},
-                        onRetry = {}
+                        onRetry = {},
+                        onClearInputFields = {},
+                        onNavigationEvent = {}
                     )
                 }
             }
         }
+
+        composeRule.onNodeWithTag("LoginButton", useUnmergedTree = true)
+            .assertExists()
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun whenClickLoginButton_shouldTriggerCallback() {
+        var clicked = false
+        val formState = LoginFormState(
+            username = "fabiano",
+            password = "1234",
+            isFormValid = true
+        )
+
+        composeRule.setContent {
+            BaseAppTheme {
+                Box(Modifier.size(1080.dp, 1920.dp)) {
+                    LoginScreen(
+                        viewState = createViewState(
+                            screenState = LoginState.LoginIdle,
+                            formState = formState
+                        ),
+                        onLoginClick = { clicked = true },
+                        onUsernameChange = {},
+                        onPasswordChange = {},
+                        onTogglePasswordVisibility = {},
+                        onRetry = {},
+                        onClearInputFields = {},
+                        onNavigationEvent = {}
+                    )
+                }
+            }
+        }
+
         composeRule.waitForIdle()
         composeRule.onNodeWithTag("LoginButton", useUnmergedTree = true)
             .assertExists()
@@ -288,11 +415,48 @@ class LoginScreenTest {
     }
 
     @Test
-    fun loginScreen() {
+    fun whenRetryButtonClicked_shouldTriggerCallback() {
+        var retryClicked = false
+
+        composeRule.setContent {
+            BaseAppTheme {
+                LoginScreen(
+                    viewState = createViewState(screenState = LoginState.LoginError("Erro")),
+                    onLoginClick = {},
+                    onUsernameChange = {},
+                    onPasswordChange = {},
+                    onTogglePasswordVisibility = {},
+                    onRetry = { retryClicked = true },
+                    onClearInputFields = {},
+                    onNavigationEvent = {}
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("RetryButton").performClick()
+        assertTrue(retryClicked)
     }
 
     @Test
-    fun loginContent() {
-    }
+    fun whenTogglePasswordVisibility_shouldTriggerCallback() {
+        var toggleClicked = false
 
+        composeRule.setContent {
+            BaseAppTheme {
+                LoginScreen(
+                    viewState = createViewState(screenState = LoginState.LoginIdle),
+                    onLoginClick = {},
+                    onUsernameChange = {},
+                    onPasswordChange = {},
+                    onTogglePasswordVisibility = { toggleClicked = true },
+                    onRetry = {},
+                    onClearInputFields = {},
+                    onNavigationEvent = {}
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("TogglePasswordVisibility").performClick()
+        assertTrue(toggleClicked)
+    }
 }

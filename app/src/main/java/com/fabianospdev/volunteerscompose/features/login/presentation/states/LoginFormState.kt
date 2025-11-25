@@ -8,4 +8,3 @@ data class LoginFormState(
     val isFormValid: Boolean = false,
     val showPassword: Boolean = false
 )
-
