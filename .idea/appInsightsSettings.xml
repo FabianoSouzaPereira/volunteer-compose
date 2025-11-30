@@ -22,10 +22,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.fabianospdev.volunteerscompose" />
+                  <option name="mobileSdkAppId" value="1:22900152985:android:b9bcdd4967bd3b6fc57608" />
+                  <option name="projectId" value="volunteers-3a94d" />
+                  <option name="projectNumber" value="22900152985" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

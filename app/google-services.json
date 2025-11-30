@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "22900152985",
+    "project_id": "volunteers-3a94d",
+    "storage_bucket": "volunteers-3a94d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22900152985:android:133a401f9909534fc57608",
+        "android_client_info": {
+          "package_name": "com.fabianospdev.volunteersapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22900152985-lbrc7bronquca4cmenri36h2hokd9ksa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fabianospdev.volunteersapp",
+            "certificate_hash": "6d47db115195a661bdb2792a0127645f4797bc24"
+          }
+        },
+        {
+          "client_id": "22900152985-9eimgb6e6gk0gkvrcilamoh6hj9gc2la.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQVGOjko6NsUnMlbDbJDqimxQNKeroJCE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "22900152985-9eimgb6e6gk0gkvrcilamoh6hj9gc2la.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "22900152985-lif1nhd3ts4ebcmautk8amgiaitgkd5f.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fabianospdev.volunteersapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22900152985:android:b9bcdd4967bd3b6fc57608",
+        "android_client_info": {
+          "package_name": "com.fabianospdev.volunteerscompose"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22900152985-o5784ncllq1vgabnt7mbs2empgfqpck8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fabianospdev.volunteerscompose",
+            "certificate_hash": "61511bc19ef021acd79d230d213da4cabb86a60f"
+          }
+        },
+        {
+          "client_id": "22900152985-9eimgb6e6gk0gkvrcilamoh6hj9gc2la.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQVGOjko6NsUnMlbDbJDqimxQNKeroJCE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "22900152985-9eimgb6e6gk0gkvrcilamoh6hj9gc2la.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "22900152985-lif1nhd3ts4ebcmautk8amgiaitgkd5f.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fabianospdev.volunteersapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
