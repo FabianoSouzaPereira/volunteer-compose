@@ -12,6 +12,16 @@ plugins {
     id("org.jetbrains.kotlinx.kover")
 }
 
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+    println("keystore.properties charged successfully")
+} else {
+    println("keystore.properties not found")
+}
+
+
 android {
     namespace = "com.fabianospdev.volunteerscompose"
     compileSdk = 36
@@ -27,6 +37,40 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            when {
+                System.getenv("ANDROID_KEYSTORE_PATH") != null -> {
+                    storeFile = file(System.getenv("ANDROID_KEYSTORE_PATH"))
+                    storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                    keyAlias = System.getenv("ANDROID_KEYSTORE_ALIAS")
+                    keyPassword = System.getenv("ANDROID_KEYSTORE_KEY_PASSWORD")
+                    println("Setting the signature of the loaded version from environment variables.")
+                }
+                keystoreProperties.containsKey("storeFile") -> {
+                    storeFile = file(keystoreProperties["storeFile"] as String)
+                    storePassword = keystoreProperties["storePassword"] as String
+                    keyAlias = keystoreProperties["keyAlias"] as String
+                    keyPassword = keystoreProperties["keyPassword"] as String
+                    println("Setting the signature of release loaded from keystore.properties")
+                }
+                else -> {
+                    storeFile = file("debug.keystore")
+                    storePassword = "android"
+                    keyAlias = "androiddebugkey"
+                    keyPassword = "android"
+                    println("Setting the signature of release loaded with debug values")
+                }
+            }
+        }
+
+        getByName("debug") {
+            storeFile = file("debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
 
     buildTypes {
         release {
@@ -36,10 +80,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             isMinifyEnabled = false
             enableUnitTestCoverage = true
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
