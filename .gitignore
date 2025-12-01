@@ -33,3 +33,4 @@ keystores/
 keys/
 certificates/
 signing/
+script_base64.sh
