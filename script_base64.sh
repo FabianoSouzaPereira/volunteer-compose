@@ -49,3 +49,11 @@ fi
 rm -f decoded.jks keystore-verified.txt
 
 echo -e "\n=== VERIFICATION COMPLETE ===\n"
+
+
+# Mostrar conteúdo para copiar
+echo "Copy content and set GitHub Secret ANDROID_KEYSTORE_FILE:"
+echo "========================================================================"
+cat keystore-base64.txt
+echo ""
+echo "========================================================================"
