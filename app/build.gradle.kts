@@ -74,7 +74,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             enableUnitTestCoverage = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -86,6 +87,7 @@ android {
             isMinifyEnabled = false
             enableUnitTestCoverage = true
             signingConfig = signingConfigs.getByName("debug")
+            applicationIdSuffix = ".debug"
         }
     }
 
@@ -116,6 +118,19 @@ android {
 
     ksp {
         arg("room.incremental", "true")
+    }
+
+    // Gera AAB (Android App Bundle)
+    bundle {
+        language {
+            enableSplit = true
+        }
+        density {
+            enableSplit = true
+        }
+        abi {
+            enableSplit = true
+        }
     }
 
 }

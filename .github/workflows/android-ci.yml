@@ -1,0 +1,53 @@
+name: Android CI
+
+on:
+    push:
+        branches:
+        - main
+        - develop
+    pull_request:
+        branches:
+        - main
+jobs:
+    build:
+        name: Build and Test Android App
+        runs-on: ubuntu-latest
+
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+
+        - name: Set up JDK 21
+          uses: actions/setup-java@v4
+          with:
+            distribution: 'temurin'
+            java-version: '21'
+
+        - name: Setup Android SDK
+          uses: android-actions/setup- android@v3
+
+        - name: Make keystore available
+          run: |
+            echo "${{ secrets.ANDROID_KEYSTORE_File }}" | base64 --decode > android/app/keystore.jks 
+            base64 -d # Content in base64 format
+          env:
+            ANDROID_KEYSTORE_File: ${{ secrets.ANDROID_KEYSTORE_File }}
+
+        - name: Grant execute permission for gradlew
+          run: chmod +x ./gradlew
+
+        - name: Build with Gradle
+          run: ./gradlew assembleRelease
+          env:
+            ANDROID_KEYSTORE_PATH: ${{ vars.ANDROID_KEYSTORE_PATH }}
+            ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+            ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+            ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+        - name: Upload APK artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: app-release
+            path: app/build/outputs/apk/release/app-release.apk
+            retention-days: 7
+

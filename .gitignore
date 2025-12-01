@@ -19,8 +19,17 @@ local.properties
 .idea/copilot.*
 .idea/codeStyles/*
 
-# keystore files
+# Keystore files - DO NOT COMMIT
 keystore.properties
 *.jks
 *.keystore
+app/keystore.jks
+keystore-base64.txt
+decoded.jks
+keystore-verified.txt
+
 keystore/
+keystores/
+keys/
+certificates/
+signing/

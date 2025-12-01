@@ -1,0 +1,65 @@
+name: Build and Deploy to Play Store Testing
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # Permite execução manual
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - name: Run tests
+        run: ./gradlew testDebugUnitTest
+
+  build-and-deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Make keystore available
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_FILE }}" | base64 --decode > app/keystore.jks
+
+      - name: Build Release AAB
+        run: ./gradlew bundleRelease
+        env:
+          ANDROID_KEYSTORE_PATH: app/keystore.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-bundle
+          path: app/build/outputs/bundle/release/app-release.aab
+          retention-days: 7
+
+      - name: Upload to Play Store Internal Testing
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          packageName: com.fabianospdev.volunteerscompose
+          releaseFiles: app/build/outputs/bundle/release/app-release.aab
+          track: internal  # ← Testes Internos
+          inAppUpdatePriority: 2
+          whatsNewDirectory: distribution/whatsnew
