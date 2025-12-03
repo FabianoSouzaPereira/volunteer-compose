@@ -9,7 +9,7 @@
 
 #### PRINCIPAIS CARACTERÍSTICAS
 **Separação de Concerns Excelente**
-- ViewModel: Apenas lógica de negócio
+- ViewModel: Apenas controla os estados
 - Screen/Route: Apenas UI e composição
 - MainActivity: Apenas navegação
 - Components: Componentes reutilizáveis
