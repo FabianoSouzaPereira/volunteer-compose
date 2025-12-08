@@ -1,5 +1,6 @@
 package com.fabianospdev.volunteerscompose.core.di
 
+import com.fabianospdev.volunteerscompose.core.utils.Constants
 import com.fabianospdev.volunteerscompose.features.home.data.remote.HomeApiService
 import com.fabianospdev.volunteerscompose.features.login.data.remote.LoginApiService
 import dagger.Module
@@ -9,7 +10,6 @@ import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
-import kotlin.jvm.java
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -18,7 +18,7 @@ object CoreModule {
     @Singleton
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://api.seu-backend.com/") //TODO Trocar pela URL real
+            .baseUrl(Constants.API_SERVER_NAME)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

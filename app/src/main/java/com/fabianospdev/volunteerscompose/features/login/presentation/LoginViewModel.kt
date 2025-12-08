@@ -83,7 +83,7 @@ class LoginViewModel @Inject constructor(
                 formState = state.formState.copy(
                     usernameError = usernameError,
                     passwordError = passwordError,
-                    isFormValid = usernameError == null && passwordError == null
+                    isFormValid = loginButtonActive()
                 ),
                 screenState = if (usernameError != null || passwordError != null) {
                     LoginState.LoginValidationError("Verifique os campos destacados")
@@ -183,7 +183,8 @@ class LoginViewModel @Inject constructor(
             state.copy(
                 formState = state.formState.copy(
                     username = newUsername,
-                    usernameError = null
+                    usernameError = null,
+                    isFormValid = loginButtonActive()
                 )
             )
         }
@@ -194,10 +195,16 @@ class LoginViewModel @Inject constructor(
             state.copy(
                 formState = state.formState.copy(
                     password = newPassword,
-                    passwordError = null
+                    passwordError = null,
+                    isFormValid = loginButtonActive()
                 )
             )
         }
+    }
+
+    fun loginButtonActive(): Boolean {
+        val form = _viewState.value.formState
+        return form.username.isNotBlank() && form.password.isNotBlank()
     }
 
     fun onTogglePasswordVisibility() {

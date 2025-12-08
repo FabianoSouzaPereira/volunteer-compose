@@ -21,6 +21,20 @@ if (keystorePropertiesFile.exists()) {
     println("keystore.properties not found")
 }
 
+val secretsProperties = Properties().apply {
+    val secretsFile = rootProject.file("secrets.properties")
+    if (secretsFile.exists()) {
+        load(secretsFile.inputStream())
+        println("secrets.properties carregado com sucesso")
+    } else {
+        println("secrets.properties não encontrado")
+    }
+}
+
+fun getSecretProperty(key: String): String? {
+    return secretsProperties.getProperty(key)
+}
+
 
 android {
     namespace = "com.fabianospdev.volunteerscompose"
@@ -35,6 +49,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+
+        buildConfigField("String", "FIREBASE_API_KEY", "\"${getSecretProperty("FIREBASE_API_KEY") ?: ""}\"")
     }
 
     signingConfigs {
@@ -65,7 +82,7 @@ android {
         }
 
         getByName("debug") {
-            storeFile = file("debug.keystore")
+            storeFile = file("${System.getProperty("user.home")}/.android/debug.keystore")
             storePassword = "android"
             keyAlias = "androiddebugkey"
             keyPassword = "android"
@@ -82,12 +99,16 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("release")
+
+            buildConfigField("String", "FIREBASE_API_KEY", "\"${getSecretProperty("FIREBASE_API_KEY") ?: ""}\"")
         }
         debug {
             isMinifyEnabled = false
             enableUnitTestCoverage = true
             signingConfig = signingConfigs.getByName("debug")
             applicationIdSuffix = ".debug"
+
+            buildConfigField("String", "FIREBASE_API_KEY", "\"${getSecretProperty("FIREBASE_API_KEY") ?: ""}\"")
         }
     }
 
@@ -114,6 +135,7 @@ android {
     buildFeatures {
         compose = true
         viewBinding = true
+        buildConfig = true
     }
 
     ksp {
