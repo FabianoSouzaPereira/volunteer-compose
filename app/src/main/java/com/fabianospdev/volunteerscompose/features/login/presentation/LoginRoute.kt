@@ -26,13 +26,8 @@ fun LoginRoute(onNavigationEvent: (LoginNavigationEvent) -> Unit) {
         onTogglePasswordVisibility = viewModel::onTogglePasswordVisibility,
         onRetry = viewModel::onRetry,
         onClearInputFields = viewModel::clearInputFields,
-        onNavigationEvent = { event ->
-            when (event) {
-                is LoginNavigationEvent.NavigateToSettings -> {
-                    viewModel.onNavigateToSettings()
-                }
-                else -> onNavigationEvent(event)
-            }
-        }
+        onNavigateToForgotPassword = viewModel::onNavigateToForgotPassword,
+        onNavigateToRegister = viewModel::onNavigateToRegister,
+        onNavigateToSettings = viewModel::onNavigateToSettings
     )
 }

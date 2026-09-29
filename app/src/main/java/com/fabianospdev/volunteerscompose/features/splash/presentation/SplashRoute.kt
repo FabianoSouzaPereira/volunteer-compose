@@ -1,12 +1,18 @@
 package com.fabianospdev.volunteerscompose.features.splash.presentation
 
-
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginNavigationEvent
+import androidx.compose.runtime.LaunchedEffect
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun SplashRoute(onNavigationEvent: (SplashNavigationEvent) -> Unit) {
-    SplashScreen(onNavigationEvent = onNavigationEvent)
+    val viewModel: SplashViewModel = hiltViewModel()
+
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvents.collect { event ->
+            onNavigationEvent(event)
+        }
+    }
+
+    SplashScreen()
 }

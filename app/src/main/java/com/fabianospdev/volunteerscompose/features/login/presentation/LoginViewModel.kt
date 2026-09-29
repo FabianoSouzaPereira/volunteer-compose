@@ -3,6 +3,14 @@ package com.fabianospdev.volunteerscompose.features.login.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fabianospdev.volunteerscompose.core.di.DispatcherProvider
+import com.fabianospdev.volunteerscompose.core.helpers.TokenManager
+import com.fabianospdev.volunteerscompose.core.helpers.exceptions.BadRequestException
+import com.fabianospdev.volunteerscompose.core.helpers.exceptions.NetworkException
+import com.fabianospdev.volunteerscompose.core.helpers.exceptions.TimeoutException
+import com.fabianospdev.volunteerscompose.core.helpers.exceptions.UnauthorizedException
+import com.fabianospdev.volunteerscompose.core.helpers.exceptions.ValidationException
+import com.fabianospdev.volunteerscompose.core.helpers.exceptions.errorMessage
+import com.fabianospdev.volunteerscompose.core.helpers.mutableNavigationEvents
 import com.fabianospdev.volunteerscompose.core.helpers.retry.RetryController
 import com.fabianospdev.volunteerscompose.features.login.domain.entities.LoginResponseEntity
 import com.fabianospdev.volunteerscompose.features.login.domain.usecases.LoginUsecase
@@ -10,9 +18,7 @@ import com.fabianospdev.volunteerscompose.features.login.presentation.states.Log
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginState
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,12 +26,14 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUsecase: LoginUsecase,
     private val retryController: RetryController,
-    private val dispatcherProvider: DispatcherProvider
+    private val dispatcherProvider: DispatcherProvider,
+    private val tokenManager: TokenManager
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow(LoginViewState())
@@ -34,8 +42,7 @@ class LoginViewModel @Inject constructor(
     private val _showRetryLimitReached = MutableStateFlow(false)
     val showRetryLimitReached: StateFlow<Boolean> get() = _showRetryLimitReached
 
-
-    private val _navigationEvents = MutableSharedFlow<LoginNavigationEvent>()
+    private val _navigationEvents = mutableNavigationEvents<LoginNavigationEvent>()
     val navigationEvents: SharedFlow<LoginNavigationEvent> = _navigationEvents.asSharedFlow()
 
     init {
@@ -96,7 +103,6 @@ class LoginViewModel @Inject constructor(
         return usernameError == null && passwordError == null
     }
 
-    /** Data class to validations events */
     private data class ValidationRule(
         val condition: Boolean,
         val errorMessage: String
@@ -123,26 +129,13 @@ class LoginViewModel @Inject constructor(
             result.fold(
                 onSuccess = { response ->
                     retryController.resetRetryCount()
+                    tokenManager.saveToken(response.token)
                     clearInputFields()
                     onLoginSuccessWithDelay(response)
                 },
                 onFailure = { throwable ->
                     retryController.incrementRetryCount()
-                    val message = throwable.message ?: "Erro desconhecido"
-
-                    val errorState = when {
-                        message.contains("timeout", ignoreCase = true) ->
-                            LoginState.LoginTimeoutError(message)
-                        message.contains("network", ignoreCase = true) ||
-                                message.contains("unable to resolve host", ignoreCase = true) ->
-                            LoginState.LoginNoConnection(message)
-                        message.contains("unauthorized", ignoreCase = true) ||
-                                message.contains("401") ->
-                            LoginState.LoginUnauthorized(message)
-                        else -> LoginState.LoginError(message)
-                    }
-
-                    _viewState.update { it.copy(screenState = errorState) }
+                    _viewState.update { it.copy(screenState = throwable.toLoginErrorState()) }
                 }
             )
         }
@@ -165,7 +158,6 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    // Outros eventos de navegação
     fun onNavigateToHome() {
         viewModelScope.launch {
             _navigationEvents.emit(LoginNavigationEvent.NavigateToHome)
@@ -175,6 +167,18 @@ class LoginViewModel @Inject constructor(
     fun onNavigateToSettings() {
         viewModelScope.launch {
             _navigationEvents.emit(LoginNavigationEvent.NavigateToSettings)
+        }
+    }
+
+    fun onNavigateToForgotPassword() {
+        viewModelScope.launch {
+            _navigationEvents.emit(LoginNavigationEvent.NavigateToForgotPassword)
+        }
+    }
+
+    fun onNavigateToRegister() {
+        viewModelScope.launch {
+            _navigationEvents.emit(LoginNavigationEvent.NavigateToRegister)
         }
     }
 
@@ -241,5 +245,16 @@ class LoginViewModel @Inject constructor(
         clearInputFields()
         retryController.resetRetryLimitNotification()
         resetState()
+    }
+}
+
+private fun Throwable.toLoginErrorState(): LoginState {
+    val message = errorMessage()
+    return when (this) {
+        is TimeoutException -> LoginState.LoginTimeoutError(message)
+        is NetworkException -> LoginState.LoginNoConnection(message)
+        is UnauthorizedException -> LoginState.LoginUnauthorized(message)
+        is BadRequestException, is ValidationException -> LoginState.LoginValidationError(message)
+        else -> LoginState.LoginError(message)
     }
 }

@@ -2,9 +2,11 @@ package com.fabianospdev.volunteerscompose.features.login.presentation
 
 import app.cash.turbine.test
 import com.fabianospdev.volunteerscompose.core.FakeRetryController
+import com.fabianospdev.volunteerscompose.core.FakeTokenManager
 import com.fabianospdev.volunteerscompose.core.MainDispatcherRule
 import com.fabianospdev.volunteerscompose.core.di.DispatcherProvider
 import com.fabianospdev.volunteerscompose.core.helpers.coroutines.TestDispatcherProvider
+import com.fabianospdev.volunteerscompose.core.helpers.exceptions.NetworkException
 import com.fabianospdev.volunteerscompose.core.helpers.retry.DefaultRetryController
 import com.fabianospdev.volunteerscompose.features.login.domain.entities.LoginResponseEntity
 import com.fabianospdev.volunteerscompose.features.login.domain.usecases.LoginUsecase
@@ -34,6 +36,7 @@ class LoginViewModelTest {
     private lateinit var dispatcherProvider: DispatcherProvider
     private lateinit var loginUsecase: LoginUsecase
     private lateinit var retryController: FakeRetryController
+    private lateinit var tokenManager: FakeTokenManager
     private lateinit var viewModel: LoginViewModel
 
     @Before
@@ -41,11 +44,13 @@ class LoginViewModelTest {
         dispatcherProvider = TestDispatcherProvider(mainRule.dispatcher)
         loginUsecase = mockk()
         retryController = FakeRetryController()
+        tokenManager = FakeTokenManager()
 
         viewModel = LoginViewModel(
             loginUsecase = loginUsecase,
             retryController = retryController,
-            dispatcherProvider = dispatcherProvider
+            dispatcherProvider = dispatcherProvider,
+            tokenManager = tokenManager
         )
     }
 
@@ -147,8 +152,9 @@ class LoginViewModelTest {
             val successState = awaitItem()
             assertTrue(successState.screenState is LoginState.LoginSuccess)
 
-            val loginSuccess = successState.screenState
+            val loginSuccess = successState.screenState as LoginState.LoginSuccess
             assertEquals(successResponse, loginSuccess.response)
+            assertEquals("abc123", tokenManager.savedToken)
 
             cancelAndConsumeRemainingEvents()
         }
@@ -260,7 +266,8 @@ class LoginViewModelTest {
         val vm = LoginViewModel(
             loginUsecase,
             retry,
-            dispatcherProvider
+            dispatcherProvider,
+            FakeTokenManager()
         )
 
         // aciona o limite
@@ -275,5 +282,31 @@ class LoginViewModelTest {
         advanceUntilIdle()
 
         assertTrue(retry.isRetryEnabled.value)
+    }
+
+    @Test
+    fun `should map network exception to no connection state`() = runTest {
+        coEvery { loginUsecase.getLogin(any(), any()) } returns
+            Result.failure(NetworkException("host down"))
+
+        viewModel.onUsernameChange("user@test.com")
+        viewModel.onPasswordChange("123456")
+        viewModel.onLoginClick()
+        advanceUntilIdle()
+
+        val state = viewModel.viewState.value.screenState as LoginState.LoginNoConnection
+        assertEquals("host down", state.message)
+    }
+
+    @Test
+    fun `should emit navigation event when navigating to forgot password`() = runTest {
+        viewModel.navigationEvents.test {
+            viewModel.onNavigateToForgotPassword()
+
+            val event = awaitItem()
+            assertEquals(LoginNavigationEvent.NavigateToForgotPassword, event)
+
+            cancelAndConsumeRemainingEvents()
+        }
     }
 }

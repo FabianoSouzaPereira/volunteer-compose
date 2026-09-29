@@ -13,15 +13,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(onNavigationEvent: (SplashNavigationEvent) -> Unit) {
+fun SplashScreen() {
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -34,8 +32,6 @@ fun SplashScreen(onNavigationEvent: (SplashNavigationEvent) -> Unit) {
                 .verticalScroll(rememberScrollState())
         ) {
             SplashContent(
-                onNavigationEvent = onNavigationEvent,
-                name = "Android",
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
@@ -46,16 +42,8 @@ fun SplashScreen(onNavigationEvent: (SplashNavigationEvent) -> Unit) {
 
 @Composable
 fun SplashContent(
-    onNavigationEvent: (SplashNavigationEvent) -> Unit,
-    name: String,
     modifier: Modifier = Modifier
 ) {
-
-    LaunchedEffect(Unit) {
-        delay(4000)
-        onNavigationEvent(SplashNavigationEvent.NavigateToLogin)
-    }
-
     Column(
         modifier = modifier
             .fillMaxSize()

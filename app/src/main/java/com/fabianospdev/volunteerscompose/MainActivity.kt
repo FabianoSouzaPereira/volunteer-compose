@@ -22,9 +22,8 @@ import com.fabianospdev.volunteerscompose.features.settings.presentation.Setting
 import com.fabianospdev.volunteerscompose.features.settings.presentation.states.SettingsNavigationEvent
 import com.fabianospdev.volunteerscompose.features.splash.presentation.SplashNavigationEvent
 import com.fabianospdev.volunteerscompose.features.splash.presentation.SplashRoute
-import com.fabianospdev.volunteerscompose.ui.theme.BaseAppTheme
+import com.fabianospdev.volunteerscompose.ui.theme.VolunteersTheme
 import dagger.hilt.android.AndroidEntryPoint
-
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -33,7 +32,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Surface(modifier = Modifier.fillMaxSize(), tonalElevation = 5.dp) {
-                BaseAppTheme {
+                VolunteersTheme {
                     val navController = rememberNavController()
                     val navigator = remember { AppNavigator(navController) }
 
@@ -76,7 +75,7 @@ class MainActivity : ComponentActivity() {
                                     is HomeNavigationEvent.NavigateToProfile ->
                                         navigator.navigateTo("profile")
                                     is HomeNavigationEvent.NavigateToLogin ->
-                                        navigator.navigateToLogin(Routes.HOME)
+                                        navigator.navigateToLoginClearingStack()
                                     is HomeNavigationEvent.NavigateBack ->
                                         navigator.popBackStack()
                                     is HomeNavigationEvent.NavigateToRoute ->
@@ -91,6 +90,8 @@ class MainActivity : ComponentActivity() {
                                         navigator.popBackStack()
                                     is SettingsNavigationEvent.NavigateToHome ->
                                         navigator.navigateToHome(Routes.SETTINGS)
+                                    is SettingsNavigationEvent.NavigateToLogin ->
+                                        navigator.navigateToLoginClearingStack()
                                     is SettingsNavigationEvent.NavigateToProfile ->
                                         navigator.navigateTo("profile")
                                     is SettingsNavigationEvent.NavigateToAbout ->

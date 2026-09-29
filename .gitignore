@@ -12,7 +12,6 @@
 /captures
 .externalNativeBuild
 .cxx
-local.properties
 
 # Copilot / IDE data
 .idea/codeStyleConfig.xml
@@ -20,7 +19,7 @@ local.properties
 .idea/codeStyles/*
 
 # keystore files
-keystore.properties
 *.jks
 *.keystore
-keystore/
+/keystore-base64.txt
+/keystore.properties

@@ -1,8 +1,9 @@
 package com.fabianospdev.volunteerscompose.features.login.data.datasources
 
+import com.fabianospdev.volunteerscompose.core.helpers.exceptions.toRequestException
+import com.fabianospdev.volunteerscompose.features.login.data.models.LoginRequestModel
 import com.fabianospdev.volunteerscompose.features.login.data.models.LoginResponseModel
 import com.fabianospdev.volunteerscompose.features.login.data.remote.LoginApiService
-import com.fabianospdev.volunteerscompose.features.login.domain.datasources.LoginDatasource
 import javax.inject.Inject
 
 class LoginDatasourceImpl @Inject constructor(
@@ -10,10 +11,10 @@ class LoginDatasourceImpl @Inject constructor(
 ) : LoginDatasource {
     override suspend fun getLogin(email: String, password: String): Result<LoginResponseModel> {
         return try {
-            val response = api.getLogin(email, password)
+            val response = api.login(LoginRequestModel(email = email, password = password))
             Result.success(response)
         } catch (e: Exception) {
-            Result.failure(Throwable("Authentication error: ${e.message}", e))
+            Result.failure(e.toRequestException())
         }
     }
 }

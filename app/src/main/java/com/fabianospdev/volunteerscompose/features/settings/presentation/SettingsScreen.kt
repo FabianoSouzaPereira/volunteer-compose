@@ -1,5 +1,6 @@
 package com.fabianospdev.volunteerscompose.features.settings.presentation
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,25 +14,28 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.fabianospdev.volunteerscompose.R
 import com.fabianospdev.volunteerscompose.features.login.presentation.components.ShowErrorScreen
+import com.fabianospdev.volunteerscompose.features.settings.presentation.states.SettingsState
+import com.fabianospdev.volunteerscompose.features.settings.presentation.states.SettingsViewState
+import com.fabianospdev.volunteerscompose.features.settings.presentation.states.toErrorType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    state: SettingsState,
-    isDarkModeEnabled: Boolean,
-    notificationsEnabled: Boolean,
+    viewState: SettingsViewState,
     onDarkModeToggle: (Boolean) -> Unit,
     onNotificationsToggle: (Boolean) -> Unit,
     onNavigateBack: () -> Unit,
@@ -40,6 +44,8 @@ fun SettingsScreen(
     onLogout: () -> Unit,
     onRetry: () -> Unit
 ) {
+    val settings = viewState.settings
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -55,14 +61,14 @@ fun SettingsScreen(
             )
         }
     ) { innerPadding ->
-        when (val currentState = state) {
+        when (val currentState = viewState.screenState) {
             is SettingsState.SettingsLoading -> {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
-                    horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
-                    verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
                     Text("Carregando configurações...")
                 }
@@ -86,7 +92,7 @@ fun SettingsScreen(
                             )
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            androidx.compose.material3.ListItem(
+                            ListItem(
                                 leadingContent = {
                                     Icon(
                                         painter = painterResource(id = R.drawable.outline_dark_mode_24),
@@ -96,7 +102,7 @@ fun SettingsScreen(
                                 headlineContent = { Text("Modo Escuro") },
                                 trailingContent = {
                                     Switch(
-                                        checked = isDarkModeEnabled,
+                                        checked = settings.darkMode,
                                         onCheckedChange = onDarkModeToggle
                                     )
                                 }
@@ -114,8 +120,7 @@ fun SettingsScreen(
                             )
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            // Notificações
-                            androidx.compose.material3.ListItem(
+                            ListItem(
                                 leadingContent = {
                                     Icon(
                                         painter = painterResource(id = R.drawable.baseline_emoji_emotions_24),
@@ -125,7 +130,7 @@ fun SettingsScreen(
                                 headlineContent = { Text("Notificações") },
                                 trailingContent = {
                                     Switch(
-                                        checked = notificationsEnabled,
+                                        checked = settings.notifications,
                                         onCheckedChange = onNotificationsToggle
                                     )
                                 }
@@ -149,7 +154,7 @@ fun SettingsScreen(
                             ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.exercise_48dp),
-                                    contentDescription = "Notificações"
+                                    contentDescription = "Perfil"
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text("Perfil")
@@ -163,7 +168,7 @@ fun SettingsScreen(
                             ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.outline_data_info_alert_24),
-                                    contentDescription = "Notificações"
+                                    contentDescription = "Sobre"
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text("Sobre")
@@ -216,13 +221,4 @@ fun SettingsScreen(
             }
         }
     }
-}
-
-
-fun SettingsState.toErrorType(): com.fabianospdev.volunteerscompose.core.domain.models.ErrorType = when (this) {
-    is SettingsState.SettingsNoConnection -> com.fabianospdev.volunteerscompose.core.domain.models.ErrorType.NETWORK
-    is SettingsState.SettingsTimeoutError -> com.fabianospdev.volunteerscompose.core.domain.models.ErrorType.TIMEOUT
-    is SettingsState.SettingsUnauthorized -> com.fabianospdev.volunteerscompose.core.domain.models.ErrorType.UNAUTHORIZED
-    is SettingsState.SettingsValidationError -> com.fabianospdev.volunteerscompose.core.domain.models.ErrorType.VALIDATION
-    else -> com.fabianospdev.volunteerscompose.core.domain.models.ErrorType.UNKNOWN
 }

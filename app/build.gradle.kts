@@ -38,6 +38,8 @@ android {
     }
 
     signingConfigs {
+        val defaultDebugKeystore = file("${System.getProperty("user.home")}/.android/debug.keystore")
+
         create("release") {
             when {
                 System.getenv("ANDROID_KEYSTORE_PATH") != null -> {
@@ -55,20 +57,13 @@ android {
                     println("Setting the signature of release loaded from keystore.properties")
                 }
                 else -> {
-                    storeFile = file("debug.keystore")
+                    storeFile = defaultDebugKeystore
                     storePassword = "android"
                     keyAlias = "androiddebugkey"
                     keyPassword = "android"
                     println("Setting the signature of release loaded with debug values")
                 }
             }
-        }
-
-        getByName("debug") {
-            storeFile = file("debug.keystore")
-            storePassword = "android"
-            keyAlias = "androiddebugkey"
-            keyPassword = "android"
         }
     }
 

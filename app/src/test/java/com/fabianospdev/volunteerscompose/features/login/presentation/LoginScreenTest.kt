@@ -17,7 +17,7 @@ import com.fabianospdev.volunteerscompose.features.login.domain.entities.LoginRe
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginFormState
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginState
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginViewState
-import com.fabianospdev.volunteerscompose.ui.theme.BaseAppTheme
+import com.fabianospdev.volunteerscompose.ui.theme.VolunteersTheme
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -65,7 +65,7 @@ class LoginScreenTest {
     @Test
     fun whenStateIsIdle_shouldShowLoginIdle() {
         composeRule.setContent {
-            BaseAppTheme {
+            VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginIdle),
                     onLoginClick = {},
@@ -73,8 +73,7 @@ class LoginScreenTest {
                     onPasswordChange = {},
                     onTogglePasswordVisibility = {},
                     onRetry = {},
-                    onClearInputFields = {},
-                    onNavigationEvent = {}
+                    onClearInputFields = {}
                 )
             }
         }
@@ -85,7 +84,7 @@ class LoginScreenTest {
     @Test
     fun whenStateIsLoading_shouldShowLoading() {
         composeRule.setContent {
-            BaseAppTheme {
+            VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginLoading),
                     onLoginClick = {},
@@ -93,8 +92,7 @@ class LoginScreenTest {
                     onPasswordChange = {},
                     onTogglePasswordVisibility = {},
                     onRetry = {},
-                    onClearInputFields = {},
-                    onNavigationEvent = {}
+                    onClearInputFields = {}
                 )
             }
         }
@@ -105,7 +103,7 @@ class LoginScreenTest {
     @Test
     fun whenStateIsSuccess_shouldShowSuccessScreen() {
         composeRule.setContent {
-            BaseAppTheme {
+            VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = createSuccessLoginState()),
                     onLoginClick = {},
@@ -113,8 +111,7 @@ class LoginScreenTest {
                     onPasswordChange = {},
                     onTogglePasswordVisibility = {},
                     onRetry = {},
-                    onClearInputFields = {},
-                    onNavigationEvent = {}
+                    onClearInputFields = {}
                 )
             }
         }
@@ -125,7 +122,7 @@ class LoginScreenTest {
     @Test
     fun whenStateIsError_shouldShowErrorScreen() {
         composeRule.setContent {
-            BaseAppTheme {
+            VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginError("Erro de rede")),
                     onLoginClick = {},
@@ -133,8 +130,7 @@ class LoginScreenTest {
                     onPasswordChange = {},
                     onTogglePasswordVisibility = {},
                     onRetry = {},
-                    onClearInputFields = {},
-                    onNavigationEvent = {}
+                    onClearInputFields = {}
                 )
             }
         }
@@ -145,7 +141,7 @@ class LoginScreenTest {
     @Test
     fun whenStateIsNoConnection_shouldShowErrorScreen() {
         composeRule.setContent {
-            BaseAppTheme {
+            VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginNoConnection("Sem conexão")),
                     onLoginClick = {},
@@ -153,8 +149,7 @@ class LoginScreenTest {
                     onPasswordChange = {},
                     onTogglePasswordVisibility = {},
                     onRetry = {},
-                    onClearInputFields = {},
-                    onNavigationEvent = {}
+                    onClearInputFields = {}
                 )
             }
         }
@@ -165,7 +160,7 @@ class LoginScreenTest {
     @Test
     fun whenStateIsTimeoutError_shouldShowErrorScreen() {
         composeRule.setContent {
-            BaseAppTheme {
+            VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginTimeoutError("Timeout")),
                     onLoginClick = {},
@@ -173,8 +168,7 @@ class LoginScreenTest {
                     onPasswordChange = {},
                     onTogglePasswordVisibility = {},
                     onRetry = {},
-                    onClearInputFields = {},
-                    onNavigationEvent = {}
+                    onClearInputFields = {}
                 )
             }
         }
@@ -185,7 +179,7 @@ class LoginScreenTest {
     @Test
     fun whenStateIsUnauthorized_shouldShowErrorScreen() {
         composeRule.setContent {
-            BaseAppTheme {
+            VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginUnauthorized("Não autorizado")),
                     onLoginClick = {},
@@ -193,8 +187,7 @@ class LoginScreenTest {
                     onPasswordChange = {},
                     onTogglePasswordVisibility = {},
                     onRetry = {},
-                    onClearInputFields = {},
-                    onNavigationEvent = {}
+                    onClearInputFields = {}
                 )
             }
         }
@@ -205,7 +198,7 @@ class LoginScreenTest {
     @Test
     fun whenStateIsValidationError_shouldShowErrorScreen() {
         composeRule.setContent {
-            BaseAppTheme {
+            VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginValidationError("Erro de validação")),
                     onLoginClick = {},
@@ -213,8 +206,7 @@ class LoginScreenTest {
                     onPasswordChange = {},
                     onTogglePasswordVisibility = {},
                     onRetry = {},
-                    onClearInputFields = {},
-                    onNavigationEvent = {}
+                    onClearInputFields = {}
                 )
             }
         }
@@ -225,7 +217,7 @@ class LoginScreenTest {
     @Test
     fun whenStateIsUnknownError_shouldShowErrorScreen() {
         composeRule.setContent {
-            BaseAppTheme {
+            VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginUnknown("Erro desconhecido")),
                     onLoginClick = {},
@@ -233,8 +225,7 @@ class LoginScreenTest {
                     onPasswordChange = {},
                     onTogglePasswordVisibility = {},
                     onRetry = {},
-                    onClearInputFields = {},
-                    onNavigationEvent = {}
+                    onClearInputFields = {}
                 )
             }
         }
@@ -245,7 +236,7 @@ class LoginScreenTest {
     @Test
     fun whenStateIsIdleShowLoginTitle() {
         composeRule.setContent {
-            BaseAppTheme {
+            VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginIdle),
                     onLoginClick = {},
@@ -253,8 +244,7 @@ class LoginScreenTest {
                     onPasswordChange = {},
                     onTogglePasswordVisibility = {},
                     onRetry = {},
-                    onClearInputFields = {},
-                    onNavigationEvent = {}
+                    onClearInputFields = {}
                 )
             }
         }
@@ -265,7 +255,7 @@ class LoginScreenTest {
     @Test
     fun whenStateIsIdleShowUserNameField() {
         composeRule.setContent {
-            BaseAppTheme {
+            VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginIdle),
                     onLoginClick = {},
@@ -273,8 +263,7 @@ class LoginScreenTest {
                     onPasswordChange = {},
                     onTogglePasswordVisibility = {},
                     onRetry = {},
-                    onClearInputFields = {},
-                    onNavigationEvent = {}
+                    onClearInputFields = {}
                 )
             }
         }
@@ -285,7 +274,7 @@ class LoginScreenTest {
     @Test
     fun whenStateIsIdleShowPasswordField() {
         composeRule.setContent {
-            BaseAppTheme {
+            VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginIdle),
                     onLoginClick = {},
@@ -293,8 +282,7 @@ class LoginScreenTest {
                     onPasswordChange = {},
                     onTogglePasswordVisibility = {},
                     onRetry = {},
-                    onClearInputFields = {},
-                    onNavigationEvent = {}
+                    onClearInputFields = {}
                 )
             }
         }
@@ -311,7 +299,7 @@ class LoginScreenTest {
         )
 
         composeRule.setContent {
-            BaseAppTheme {
+            VolunteersTheme {
                 Box(Modifier.size(1080.dp, 1920.dp)) {
                     LoginScreen(
                         viewState = createViewState(
@@ -323,8 +311,7 @@ class LoginScreenTest {
                         onPasswordChange = {},
                         onTogglePasswordVisibility = {},
                         onRetry = {},
-                        onClearInputFields = {},
-                        onNavigationEvent = {}
+                        onClearInputFields = {}
                     )
                 }
             }
@@ -348,7 +335,7 @@ class LoginScreenTest {
         )
 
         composeRule.setContent {
-            BaseAppTheme {
+            VolunteersTheme {
                 Box(Modifier.size(1080.dp, 1920.dp)) {
                     LoginScreen(
                         viewState = createViewState(
@@ -360,8 +347,7 @@ class LoginScreenTest {
                         onPasswordChange = {},
                         onTogglePasswordVisibility = {},
                         onRetry = {},
-                        onClearInputFields = {},
-                        onNavigationEvent = {}
+                        onClearInputFields = {}
                     )
                 }
             }
@@ -382,7 +368,7 @@ class LoginScreenTest {
         )
 
         composeRule.setContent {
-            BaseAppTheme {
+            VolunteersTheme {
                 Box(Modifier.size(1080.dp, 1920.dp)) {
                     LoginScreen(
                         viewState = createViewState(
@@ -394,8 +380,7 @@ class LoginScreenTest {
                         onPasswordChange = {},
                         onTogglePasswordVisibility = {},
                         onRetry = {},
-                        onClearInputFields = {},
-                        onNavigationEvent = {}
+                        onClearInputFields = {}
                     )
                 }
             }
@@ -419,7 +404,7 @@ class LoginScreenTest {
         var retryClicked = false
 
         composeRule.setContent {
-            BaseAppTheme {
+            VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginError("Erro")),
                     onLoginClick = {},
@@ -427,8 +412,7 @@ class LoginScreenTest {
                     onPasswordChange = {},
                     onTogglePasswordVisibility = {},
                     onRetry = { retryClicked = true },
-                    onClearInputFields = {},
-                    onNavigationEvent = {}
+                    onClearInputFields = {}
                 )
             }
         }
@@ -442,7 +426,7 @@ class LoginScreenTest {
         var toggleClicked = false
 
         composeRule.setContent {
-            BaseAppTheme {
+            VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginIdle),
                     onLoginClick = {},
@@ -450,8 +434,7 @@ class LoginScreenTest {
                     onPasswordChange = {},
                     onTogglePasswordVisibility = { toggleClicked = true },
                     onRetry = {},
-                    onClearInputFields = {},
-                    onNavigationEvent = {}
+                    onClearInputFields = {}
                 )
             }
         }

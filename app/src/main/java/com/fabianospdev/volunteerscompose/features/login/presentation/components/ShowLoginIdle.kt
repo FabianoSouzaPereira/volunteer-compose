@@ -58,7 +58,6 @@ import androidx.compose.ui.unit.sp
 import com.fabianospdev.volunteerscompose.R
 import com.fabianospdev.volunteerscompose.core.utils.LoadFontsFamily
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginFormState
-import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginNavigationEvent
 import com.fabianospdev.volunteerscompose.features.login.presentation.utils.isRunningRoboletric
 import com.fabianospdev.volunteerscompose.ui.theme.appGradient
 
@@ -71,7 +70,9 @@ fun ShowLoginIdle(
     onTogglePasswordVisibility: () -> Unit,
     focusRequester: FocusRequester,
     keyboardController: SoftwareKeyboardController?,
-    onNavigationEvent: (LoginNavigationEvent) -> Unit = {}
+    onNavigateToForgotPassword: () -> Unit = {},
+    onNavigateToRegister: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {}
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -314,9 +315,7 @@ fun ShowLoginIdle(
                 ) {
 
                     TextButton(
-                        onClick = {
-                            onNavigationEvent(LoginNavigationEvent.NavigateToForgotPassword)
-                        },
+                        onClick = onNavigateToForgotPassword,
                         modifier = Modifier.testTag("forgotPasswordButton")
                     ) {
                         Text(
@@ -327,9 +326,7 @@ fun ShowLoginIdle(
                     }
 
                     TextButton(
-                        onClick = {
-                            onNavigationEvent(LoginNavigationEvent.NavigateToRegister)
-                        },
+                        onClick = onNavigateToRegister,
                         modifier = Modifier.testTag("registerButton")
                     ) {
                         Text(
@@ -340,9 +337,7 @@ fun ShowLoginIdle(
                     }
 
                     TextButton(
-                        onClick = {
-                            onNavigationEvent(LoginNavigationEvent.NavigateToSettings)
-                        },
+                        onClick = onNavigateToSettings,
                         modifier = Modifier.testTag("settingsButton")
                     ) {
                         Text(

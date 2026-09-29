@@ -19,16 +19,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.fabianospdev.volunteerscompose.R
-import com.fabianospdev.volunteerscompose.features.home.presentation.states.HomeNavigationEvent
+import com.fabianospdev.volunteerscompose.features.home.domain.entities.HomeEntity
 import com.fabianospdev.volunteerscompose.features.home.presentation.states.HomeState
+import com.fabianospdev.volunteerscompose.features.home.presentation.states.HomeViewState
 import com.fabianospdev.volunteerscompose.features.home.presentation.states.toErrorType
 import com.fabianospdev.volunteerscompose.features.login.presentation.components.ShowErrorScreen
-import com.fabianospdev.volunteerscompose.features.settings.presentation.SettingsState
 
 @Composable
 fun HomeScreen(
-    state: HomeState,
-    onNavigationEvent: (HomeNavigationEvent) -> Unit = {},
+    viewState: HomeViewState,
+    onNavigateToSettings: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToLogin: () -> Unit = {},
     onRetry: () -> Unit
 ) {
     Scaffold(
@@ -42,15 +44,25 @@ fun HomeScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            when (val s = state) {
+            when (val s = viewState.screenState) {
                 is HomeState.HomeLoading -> {
-                    // ShowLoadingComponent()
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text("Carregando...")
+                    }
                 }
 
                 is HomeState.HomeIdle -> {
                     HomeContent(
-                        onNavigationEvent = onNavigationEvent,
-                        name = "Android",
+                        home = null,
+                        onNavigateToSettings = onNavigateToSettings,
+                        onNavigateToProfile = onNavigateToProfile,
+                        onNavigateToLogin = onNavigateToLogin,
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding)
@@ -59,8 +71,10 @@ fun HomeScreen(
 
                 is HomeState.HomeSuccess -> {
                     HomeContent(
-                        onNavigationEvent = onNavigationEvent,
-                        name = "Android",
+                        home = s.response,
+                        onNavigateToSettings = onNavigateToSettings,
+                        onNavigateToProfile = onNavigateToProfile,
+                        onNavigateToLogin = onNavigateToLogin,
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding)
@@ -96,8 +110,10 @@ fun HomeScreen(
 
 @Composable
 fun HomeContent(
-    onNavigationEvent: (HomeNavigationEvent) -> Unit = {},
-    name: String,
+    home: HomeEntity?,
+    onNavigateToSettings: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToLogin: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -113,40 +129,37 @@ fun HomeContent(
                 .padding(top = 40.dp)
         ) {
             Text(
-                text = "Home Screen",
+                text = home?.title ?: "Home Screen",
                 fontSize = MaterialTheme.typography.headlineMedium.fontSize
             )
 
+            home?.welcomeMessage?.let { message ->
+                Text(
+                    text = message,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
             Button(
-                onClick = { onNavigationEvent(HomeNavigationEvent.NavigateToSettings) },
+                onClick = onNavigateToSettings,
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text("Settings")
             }
 
             Button(
-                onClick = { onNavigationEvent(HomeNavigationEvent.NavigateToProfile) },
+                onClick = onNavigateToProfile,
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text("Profile")
             }
 
             Button(
-                onClick = { onNavigationEvent(HomeNavigationEvent.NavigateToLogin) },
+                onClick = onNavigateToLogin,
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text("Logout")
             }
         }
     }
-}
-
-
-/* Função auxiliar para mapear tipo de erro (adicione no mesmo arquivo) */
-fun SettingsState.toErrorType(): com.fabianospdev.volunteerscompose.core.domain.models.ErrorType = when (this) {
-    is SettingsState.SettingsNoConnection -> com.fabianospdev.volunteerscompose.core.domain.models.ErrorType.NETWORK
-    is SettingsState.SettingsTimeoutError -> com.fabianospdev.volunteerscompose.core.domain.models.ErrorType.TIMEOUT
-    is SettingsState.SettingsUnauthorized -> com.fabianospdev.volunteerscompose.core.domain.models.ErrorType.UNAUTHORIZED
-    is SettingsState.SettingsValidationError -> com.fabianospdev.volunteerscompose.core.domain.models.ErrorType.VALIDATION
-    else -> com.fabianospdev.volunteerscompose.core.domain.models.ErrorType.UNKNOWN
 }

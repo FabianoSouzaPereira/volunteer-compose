@@ -1,7 +1,7 @@
 package com.fabianospdev.volunteerscompose.features.login.data.repositories
 
 import com.fabianospdev.volunteerscompose.features.login.data.models.LoginResponseModel
-import com.fabianospdev.volunteerscompose.features.login.domain.datasources.LoginDatasource
+import com.fabianospdev.volunteerscompose.features.login.data.datasources.LoginDatasource
 import com.fabianospdev.volunteerscompose.features.login.domain.entities.LoginResponseEntity
 import io.mockk.coEvery
 import io.mockk.mockk

@@ -1,39 +1,50 @@
 package com.fabianospdev.volunteerscompose.core.helpers
-/*
-* Advantages of this approach:
-* Encapsulation: Access to the token is restricted to this TokenManager class, which makes the code more secure.
-* Ease of maintenance: If you need to modify the way the token is saved or retrieved, simply change the implementation within this class.
-* Testability: Since token handling is centralized, it is easier to create unit tests to ensure that the class's behavior is correct.
-*/
 
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object TokenManager {
-    private const val TOKEN_KEY = "token"
+interface TokenManager {
+    fun saveToken(token: String)
+    fun getToken(): String?
+    fun clearToken()
+}
 
-    private fun getSharedPreferences(context: Context): SharedPreferences {
+@Singleton
+class EncryptedTokenManager @Inject constructor(
+    @ApplicationContext private val context: Context
+) : TokenManager {
+
+    private val prefs: SharedPreferences by lazy {
         val masterKey = MasterKey.Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
-        return EncryptedSharedPreferences.create(
-            "secure_prefs",
-            masterKey.toString(),
+
+        EncryptedSharedPreferences.create(
             context,
+            FILE_NAME,
+            masterKey,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
     }
 
-    fun saveToken(context: Context, token: String) {
-        val sharedPreferences = getSharedPreferences(context)
-        sharedPreferences.edit().putString(TOKEN_KEY, token).apply()
+    override fun saveToken(token: String) {
+        prefs.edit().putString(TOKEN_KEY, token).apply()
     }
 
-    fun getToken(context: Context): String? {
-        val sharedPreferences = getSharedPreferences(context)
-        return sharedPreferences.getString(TOKEN_KEY, null)
+    override fun getToken(): String? = prefs.getString(TOKEN_KEY, null)
+
+    override fun clearToken() {
+        prefs.edit().remove(TOKEN_KEY).apply()
+    }
+
+    private companion object {
+        const val FILE_NAME = "secure_prefs"
+        const val TOKEN_KEY = "token"
     }
 }

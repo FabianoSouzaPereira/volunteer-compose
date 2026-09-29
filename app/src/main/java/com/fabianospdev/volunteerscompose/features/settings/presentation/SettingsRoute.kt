@@ -10,9 +10,7 @@ import com.fabianospdev.volunteerscompose.features.settings.presentation.states.
 @Composable
 fun SettingsRoute(onNavigationEvent: (SettingsNavigationEvent) -> Unit) {
     val viewModel: SettingsViewModel = hiltViewModel()
-    val state by viewModel.state.collectAsState()
-    val isDarkModeEnabled by viewModel.isDarkModeEnabled.collectAsState()
-    val notificationsEnabled by viewModel.notificationsEnabled.collectAsState()
+    val viewState by viewModel.viewState.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvents.collect { event ->
@@ -21,9 +19,7 @@ fun SettingsRoute(onNavigationEvent: (SettingsNavigationEvent) -> Unit) {
     }
 
     SettingsScreen(
-        state = state,
-        isDarkModeEnabled = isDarkModeEnabled,
-        notificationsEnabled = notificationsEnabled,
+        viewState = viewState,
         onDarkModeToggle = viewModel::onDarkModeToggle,
         onNotificationsToggle = viewModel::onNotificationsToggle,
         onNavigateBack = viewModel::onNavigateBack,

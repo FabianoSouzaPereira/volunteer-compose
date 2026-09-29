@@ -24,6 +24,13 @@ class AppNavigator(private val navController: NavHostController) {
         navigateTo(Routes.LOGIN, popUpTo)
     }
 
+    fun navigateToLoginClearingStack() {
+        navController.navigate(Routes.LOGIN) {
+            popUpTo(Routes.SPLASH) { inclusive = true }
+            launchSingleTop = true
+        }
+    }
+
     fun navigateToSettings() {
         navigateTo(Routes.SETTINGS)
     }

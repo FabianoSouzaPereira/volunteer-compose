@@ -22,11 +22,10 @@ import com.fabianospdev.volunteerscompose.features.login.presentation.components
 import com.fabianospdev.volunteerscompose.features.login.presentation.components.ShowLoginSuccess
 import com.fabianospdev.volunteerscompose.features.login.presentation.components.ShowLoginSuccessPopup
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginFormState
-import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginNavigationEvent
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginState
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginViewState
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.toErrorType
-import com.fabianospdev.volunteerscompose.ui.theme.BaseAppTheme
+import com.fabianospdev.volunteerscompose.ui.theme.VolunteersTheme
 
 @Composable
 fun LoginScreen(
@@ -37,9 +36,10 @@ fun LoginScreen(
     onTogglePasswordVisibility: () -> Unit,
     onRetry: () -> Unit,
     onClearInputFields: () -> Unit,
-    onNavigationEvent: (LoginNavigationEvent) -> Unit = {}
+    onNavigateToForgotPassword: () -> Unit = {},
+    onNavigateToRegister: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {}
 ) {
-    /* Extrai os valores do viewState */
     val formState = viewState.formState
     val screenState = viewState.screenState
 
@@ -47,7 +47,6 @@ fun LoginScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     var showSuccessPopup by remember { mutableStateOf(false) }
 
-    /* Mostrar popup quando login for bem sucedido */
     if (showSuccessPopup) {
         ShowLoginSuccessPopup(
             message = "Login realizado com sucesso!",
@@ -80,7 +79,9 @@ fun LoginScreen(
                         onTogglePasswordVisibility = onTogglePasswordVisibility,
                         focusRequester = focusRequester,
                         keyboardController = keyboardController,
-                        onNavigationEvent = onNavigationEvent
+                        onNavigateToForgotPassword = onNavigateToForgotPassword,
+                        onNavigateToRegister = onNavigateToRegister,
+                        onNavigateToSettings = onNavigateToSettings
                     )
                 }
                 is LoginState.LoginSuccess -> ShowLoginSuccess()
@@ -120,7 +121,7 @@ fun LoginScreenPreview() {
         screenState = LoginState.LoginIdle
     )
 
-    BaseAppTheme {
+    VolunteersTheme {
         LoginScreen(
             viewState = viewState,
             onLoginClick = { },
@@ -128,8 +129,7 @@ fun LoginScreenPreview() {
             onPasswordChange = {},
             onTogglePasswordVisibility = {},
             onRetry = {},
-            onClearInputFields = {},
-            onNavigationEvent = {}
+            onClearInputFields = {}
         )
     }
 }
