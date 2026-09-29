@@ -293,9 +293,8 @@ class LoginScreenTest {
     @Test
     fun whenFormIsValid_shouldEnableLoginButton() {
         val formState = LoginFormState(
-            username = "fabiano",
-            password = "1234",
-            isFormValid = true // Agora usando a propriedade correta
+            username = "fabiano@example.com",
+            password = "123456"
         )
 
         composeRule.setContent {
@@ -330,8 +329,7 @@ class LoginScreenTest {
     fun whenFormIsInvalid_shouldDisableLoginButton() {
         val formState = LoginFormState(
             username = "",
-            password = "",
-            isFormValid = false // Formulário inválido
+            password = ""
         )
 
         composeRule.setContent {
@@ -362,9 +360,8 @@ class LoginScreenTest {
     fun whenClickLoginButton_shouldTriggerCallback() {
         var clicked = false
         val formState = LoginFormState(
-            username = "fabiano",
-            password = "1234",
-            isFormValid = true
+            username = "fabiano@example.com",
+            password = "123456"
         )
 
         composeRule.setContent {

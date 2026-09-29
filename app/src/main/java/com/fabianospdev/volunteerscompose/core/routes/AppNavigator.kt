@@ -34,4 +34,20 @@ class AppNavigator(private val navController: NavHostController) {
     fun navigateToSettings() {
         navigateTo(Routes.SETTINGS)
     }
+
+    fun navigateToForgotPassword() {
+        navigateTo(Routes.FORGOT_PASSWORD)
+    }
+
+    fun navigateToRegister() {
+        navigateTo(Routes.REGISTER)
+    }
+
+    fun navigateToProfile() {
+        navigateTo(Routes.PROFILE)
+    }
+
+    fun navigateToAbout() {
+        navigateTo(Routes.ABOUT)
+    }
 }

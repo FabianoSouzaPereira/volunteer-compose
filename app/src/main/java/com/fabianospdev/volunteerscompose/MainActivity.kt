@@ -22,6 +22,8 @@ import com.fabianospdev.volunteerscompose.features.settings.presentation.Setting
 import com.fabianospdev.volunteerscompose.features.settings.presentation.states.SettingsNavigationEvent
 import com.fabianospdev.volunteerscompose.features.splash.presentation.SplashNavigationEvent
 import com.fabianospdev.volunteerscompose.features.splash.presentation.SplashRoute
+import com.fabianospdev.volunteerscompose.features.stub.presentation.StubNavigationEvent
+import com.fabianospdev.volunteerscompose.features.stub.presentation.StubRoute
 import com.fabianospdev.volunteerscompose.ui.theme.VolunteersTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -57,9 +59,9 @@ class MainActivity : ComponentActivity() {
                                     is LoginNavigationEvent.NavigateToSettings ->
                                         navigator.navigateToSettings()
                                     is LoginNavigationEvent.NavigateToForgotPassword ->
-                                        navigator.navigateTo("forgot_password")
+                                        navigator.navigateToForgotPassword()
                                     is LoginNavigationEvent.NavigateToRegister ->
-                                        navigator.navigateTo("register")
+                                        navigator.navigateToRegister()
                                     is LoginNavigationEvent.NavigateBack ->
                                         navigator.popBackStack()
                                     is LoginNavigationEvent.NavigateToRoute ->
@@ -73,7 +75,7 @@ class MainActivity : ComponentActivity() {
                                     is HomeNavigationEvent.NavigateToSettings ->
                                         navigator.navigateToSettings()
                                     is HomeNavigationEvent.NavigateToProfile ->
-                                        navigator.navigateTo("profile")
+                                        navigator.navigateToProfile()
                                     is HomeNavigationEvent.NavigateToLogin ->
                                         navigator.navigateToLoginClearingStack()
                                     is HomeNavigationEvent.NavigateBack ->
@@ -93,11 +95,39 @@ class MainActivity : ComponentActivity() {
                                     is SettingsNavigationEvent.NavigateToLogin ->
                                         navigator.navigateToLoginClearingStack()
                                     is SettingsNavigationEvent.NavigateToProfile ->
-                                        navigator.navigateTo("profile")
+                                        navigator.navigateToProfile()
                                     is SettingsNavigationEvent.NavigateToAbout ->
-                                        navigator.navigateTo("about")
+                                        navigator.navigateToAbout()
                                     is SettingsNavigationEvent.NavigateToRoute ->
                                         navigator.navigateTo(event.route)
+                                }
+                            }
+                        }
+                        composable(Routes.FORGOT_PASSWORD) {
+                            StubRoute(title = "Esqueci minha senha") { event ->
+                                when (event) {
+                                    is StubNavigationEvent.NavigateBack -> navigator.popBackStack()
+                                }
+                            }
+                        }
+                        composable(Routes.REGISTER) {
+                            StubRoute(title = "Criar conta") { event ->
+                                when (event) {
+                                    is StubNavigationEvent.NavigateBack -> navigator.popBackStack()
+                                }
+                            }
+                        }
+                        composable(Routes.PROFILE) {
+                            StubRoute(title = "Perfil") { event ->
+                                when (event) {
+                                    is StubNavigationEvent.NavigateBack -> navigator.popBackStack()
+                                }
+                            }
+                        }
+                        composable(Routes.ABOUT) {
+                            StubRoute(title = "Sobre") { event ->
+                                when (event) {
+                                    is StubNavigationEvent.NavigateBack -> navigator.popBackStack()
                                 }
                             }
                         }

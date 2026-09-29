@@ -363,7 +363,6 @@ fun ShowLoginIdlePreview() {
         password = "password123",
         usernameError = null,
         passwordError = null,
-        isFormValid = true,
         showPassword = false
     )
 

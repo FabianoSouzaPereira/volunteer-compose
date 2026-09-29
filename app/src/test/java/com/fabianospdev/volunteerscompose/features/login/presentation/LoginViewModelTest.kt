@@ -100,6 +100,14 @@ class LoginViewModelTest {
     }
 
     @Test
+    fun `should mark form valid when email and password meet rules`() = runTest {
+        viewModel.onUsernameChange("user@example.com")
+        viewModel.onPasswordChange("123456")
+
+        assertTrue(viewModel.viewState.value.formState.isFormValid)
+    }
+
+    @Test
     fun `should show validation error when only username is empty`() = runTest {
         viewModel.onUsernameChange("")
         viewModel.onPasswordChange("123456")

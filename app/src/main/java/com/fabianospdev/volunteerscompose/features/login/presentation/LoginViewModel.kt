@@ -51,62 +51,20 @@ class LoginViewModel @Inject constructor(
 
     private fun validateForm(): Boolean {
         val form = _viewState.value.formState
-
-        val usernameRules = listOf(
-            ValidationRule(
-                condition = form.username.isNotBlank(),
-                errorMessage = "E-mail é obrigatório"
-            ),
-            ValidationRule(
-                condition = form.username.contains("@"),
-                errorMessage = "E-mail inválido"
-            ),
-            ValidationRule(
-                condition = form.username.length <= 100,
-                errorMessage = "E-mail muito longo"
-            )
-        )
-
-        val passwordRules = listOf(
-            ValidationRule(
-                condition = form.password.isNotBlank(),
-                errorMessage = "Senha é obrigatória"
-            ),
-            ValidationRule(
-                condition = form.password.length >= 6,
-                errorMessage = "Senha deve ter pelo menos 6 caracteres"
-            ),
-            ValidationRule(
-                condition = form.password.length <= 50,
-                errorMessage = "Senha muito longa"
-            )
-        )
-
-        val usernameError = usernameRules.firstOrNull { !it.condition }?.errorMessage
-        val passwordError = passwordRules.firstOrNull { !it.condition }?.errorMessage
+        val usernameError = form.usernameErrorMessage()
+        val passwordError = form.passwordErrorMessage()
 
         _viewState.update { state ->
             state.copy(
                 formState = state.formState.copy(
                     usernameError = usernameError,
-                    passwordError = passwordError,
-                    isFormValid = usernameError == null && passwordError == null
-                ),
-                screenState = if (usernameError != null || passwordError != null) {
-                    LoginState.LoginValidationError("Verifique os campos destacados")
-                } else {
-                    LoginState.LoginIdle
-                }
+                    passwordError = passwordError
+                )
             )
         }
 
         return usernameError == null && passwordError == null
     }
-
-    private data class ValidationRule(
-        val condition: Boolean,
-        val errorMessage: String
-    )
 
     private fun observeRetryController() {
         viewModelScope.launch {
@@ -234,8 +192,7 @@ class LoginViewModel @Inject constructor(
                     username = "",
                     password = "",
                     usernameError = null,
-                    passwordError = null,
-                    isFormValid = false
+                    passwordError = null
                 )
             )
         }
