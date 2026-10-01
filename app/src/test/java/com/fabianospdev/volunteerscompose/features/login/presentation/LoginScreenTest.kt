@@ -14,6 +14,7 @@ import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fabianospdev.volunteerscompose.features.login.domain.entities.LoginResponseEntity
+import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginActions
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginFormState
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginState
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginViewState
@@ -68,12 +69,7 @@ class LoginScreenTest {
             VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginIdle),
-                    onLoginClick = {},
-                    onUsernameChange = {},
-                    onPasswordChange = {},
-                    onTogglePasswordVisibility = {},
-                    onRetry = {},
-                    onClearInputFields = {}
+                    actions = LoginActions()
                 )
             }
         }
@@ -87,12 +83,7 @@ class LoginScreenTest {
             VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginLoading),
-                    onLoginClick = {},
-                    onUsernameChange = {},
-                    onPasswordChange = {},
-                    onTogglePasswordVisibility = {},
-                    onRetry = {},
-                    onClearInputFields = {}
+                    actions = LoginActions()
                 )
             }
         }
@@ -106,12 +97,7 @@ class LoginScreenTest {
             VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = createSuccessLoginState()),
-                    onLoginClick = {},
-                    onUsernameChange = {},
-                    onPasswordChange = {},
-                    onTogglePasswordVisibility = {},
-                    onRetry = {},
-                    onClearInputFields = {}
+                    actions = LoginActions()
                 )
             }
         }
@@ -125,12 +111,7 @@ class LoginScreenTest {
             VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginError("Erro de rede")),
-                    onLoginClick = {},
-                    onUsernameChange = {},
-                    onPasswordChange = {},
-                    onTogglePasswordVisibility = {},
-                    onRetry = {},
-                    onClearInputFields = {}
+                    actions = LoginActions()
                 )
             }
         }
@@ -144,12 +125,7 @@ class LoginScreenTest {
             VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginNoConnection("Sem conexão")),
-                    onLoginClick = {},
-                    onUsernameChange = {},
-                    onPasswordChange = {},
-                    onTogglePasswordVisibility = {},
-                    onRetry = {},
-                    onClearInputFields = {}
+                    actions = LoginActions()
                 )
             }
         }
@@ -163,12 +139,7 @@ class LoginScreenTest {
             VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginTimeoutError("Timeout")),
-                    onLoginClick = {},
-                    onUsernameChange = {},
-                    onPasswordChange = {},
-                    onTogglePasswordVisibility = {},
-                    onRetry = {},
-                    onClearInputFields = {}
+                    actions = LoginActions()
                 )
             }
         }
@@ -182,12 +153,7 @@ class LoginScreenTest {
             VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginUnauthorized("Não autorizado")),
-                    onLoginClick = {},
-                    onUsernameChange = {},
-                    onPasswordChange = {},
-                    onTogglePasswordVisibility = {},
-                    onRetry = {},
-                    onClearInputFields = {}
+                    actions = LoginActions()
                 )
             }
         }
@@ -201,12 +167,7 @@ class LoginScreenTest {
             VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginValidationError("Erro de validação")),
-                    onLoginClick = {},
-                    onUsernameChange = {},
-                    onPasswordChange = {},
-                    onTogglePasswordVisibility = {},
-                    onRetry = {},
-                    onClearInputFields = {}
+                    actions = LoginActions()
                 )
             }
         }
@@ -220,12 +181,7 @@ class LoginScreenTest {
             VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginUnknown("Erro desconhecido")),
-                    onLoginClick = {},
-                    onUsernameChange = {},
-                    onPasswordChange = {},
-                    onTogglePasswordVisibility = {},
-                    onRetry = {},
-                    onClearInputFields = {}
+                    actions = LoginActions()
                 )
             }
         }
@@ -239,12 +195,7 @@ class LoginScreenTest {
             VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginIdle),
-                    onLoginClick = {},
-                    onUsernameChange = {},
-                    onPasswordChange = {},
-                    onTogglePasswordVisibility = {},
-                    onRetry = {},
-                    onClearInputFields = {}
+                    actions = LoginActions()
                 )
             }
         }
@@ -258,12 +209,7 @@ class LoginScreenTest {
             VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginIdle),
-                    onLoginClick = {},
-                    onUsernameChange = {},
-                    onPasswordChange = {},
-                    onTogglePasswordVisibility = {},
-                    onRetry = {},
-                    onClearInputFields = {}
+                    actions = LoginActions()
                 )
             }
         }
@@ -277,12 +223,7 @@ class LoginScreenTest {
             VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginIdle),
-                    onLoginClick = {},
-                    onUsernameChange = {},
-                    onPasswordChange = {},
-                    onTogglePasswordVisibility = {},
-                    onRetry = {},
-                    onClearInputFields = {}
+                    actions = LoginActions()
                 )
             }
         }
@@ -305,12 +246,7 @@ class LoginScreenTest {
                             screenState = LoginState.LoginIdle,
                             formState = formState
                         ),
-                        onLoginClick = {},
-                        onUsernameChange = {},
-                        onPasswordChange = {},
-                        onTogglePasswordVisibility = {},
-                        onRetry = {},
-                        onClearInputFields = {}
+                        actions = LoginActions()
                     )
                 }
             }
@@ -340,12 +276,7 @@ class LoginScreenTest {
                             screenState = LoginState.LoginIdle,
                             formState = formState
                         ),
-                        onLoginClick = {},
-                        onUsernameChange = {},
-                        onPasswordChange = {},
-                        onTogglePasswordVisibility = {},
-                        onRetry = {},
-                        onClearInputFields = {}
+                        actions = LoginActions()
                     )
                 }
             }
@@ -372,12 +303,7 @@ class LoginScreenTest {
                             screenState = LoginState.LoginIdle,
                             formState = formState
                         ),
-                        onLoginClick = { clicked = true },
-                        onUsernameChange = {},
-                        onPasswordChange = {},
-                        onTogglePasswordVisibility = {},
-                        onRetry = {},
-                        onClearInputFields = {}
+                        actions = LoginActions(onLoginClick = { clicked = true })
                     )
                 }
             }
@@ -404,12 +330,7 @@ class LoginScreenTest {
             VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginError("Erro")),
-                    onLoginClick = {},
-                    onUsernameChange = {},
-                    onPasswordChange = {},
-                    onTogglePasswordVisibility = {},
-                    onRetry = { retryClicked = true },
-                    onClearInputFields = {}
+                    actions = LoginActions(onRetry = { retryClicked = true })
                 )
             }
         }
@@ -426,12 +347,7 @@ class LoginScreenTest {
             VolunteersTheme {
                 LoginScreen(
                     viewState = createViewState(screenState = LoginState.LoginIdle),
-                    onLoginClick = {},
-                    onUsernameChange = {},
-                    onPasswordChange = {},
-                    onTogglePasswordVisibility = { toggleClicked = true },
-                    onRetry = {},
-                    onClearInputFields = {}
+                    actions = LoginActions(onTogglePasswordVisibility = { toggleClicked = true })
                 )
             }
         }

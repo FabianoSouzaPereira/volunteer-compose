@@ -21,6 +21,7 @@ import com.fabianospdev.volunteerscompose.features.login.presentation.components
 import com.fabianospdev.volunteerscompose.features.login.presentation.components.ShowLoginLoading
 import com.fabianospdev.volunteerscompose.features.login.presentation.components.ShowLoginSuccess
 import com.fabianospdev.volunteerscompose.features.login.presentation.components.ShowLoginSuccessPopup
+import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginActions
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginFormState
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginState
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginViewState
@@ -30,15 +31,7 @@ import com.fabianospdev.volunteerscompose.ui.theme.VolunteersTheme
 @Composable
 fun LoginScreen(
     viewState: LoginViewState,
-    onLoginClick: () -> Unit,
-    onUsernameChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
-    onTogglePasswordVisibility: () -> Unit,
-    onRetry: () -> Unit,
-    onClearInputFields: () -> Unit,
-    onNavigateToForgotPassword: () -> Unit = {},
-    onNavigateToRegister: () -> Unit = {},
-    onNavigateToSettings: () -> Unit = {}
+    actions: LoginActions = LoginActions()
 ) {
     val formState = viewState.formState
     val screenState = viewState.screenState
@@ -52,7 +45,7 @@ fun LoginScreen(
             message = "Login realizado com sucesso!",
             onDismiss = { showSuccessPopup = false },
             imageResId = R.drawable.baseline_emoji_emotions_24,
-            onAutoDismiss = onClearInputFields
+            onAutoDismiss = actions.onClearInputFields
         )
     }
 
@@ -73,15 +66,9 @@ fun LoginScreen(
                 is LoginState.LoginIdle -> {
                     ShowLoginIdle(
                         formState = formState,
-                        onLoginClick = onLoginClick,
-                        onUsernameChange = onUsernameChange,
-                        onPasswordChange = onPasswordChange,
-                        onTogglePasswordVisibility = onTogglePasswordVisibility,
+                        actions = actions,
                         focusRequester = focusRequester,
-                        keyboardController = keyboardController,
-                        onNavigateToForgotPassword = onNavigateToForgotPassword,
-                        onNavigateToRegister = onNavigateToRegister,
-                        onNavigateToSettings = onNavigateToSettings
+                        keyboardController = keyboardController
                     )
                 }
                 is LoginState.LoginSuccess -> ShowLoginSuccess()
@@ -105,7 +92,7 @@ fun LoginScreen(
                     ShowErrorScreen(
                         type = state.toErrorType(),
                         message = message,
-                        onRetry = onRetry
+                        onRetry = actions.onRetry
                     )
                 }
             }
@@ -124,12 +111,7 @@ fun LoginScreenPreview() {
     VolunteersTheme {
         LoginScreen(
             viewState = viewState,
-            onLoginClick = { },
-            onUsernameChange = {},
-            onPasswordChange = {},
-            onTogglePasswordVisibility = {},
-            onRetry = {},
-            onClearInputFields = {}
+            actions = LoginActions()
         )
     }
 }

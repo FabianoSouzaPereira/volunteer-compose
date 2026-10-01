@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.fabianospdev.volunteerscompose.R
 import com.fabianospdev.volunteerscompose.features.home.domain.entities.HomeEntity
+import com.fabianospdev.volunteerscompose.features.home.presentation.states.HomeActions
 import com.fabianospdev.volunteerscompose.features.home.presentation.states.HomeState
 import com.fabianospdev.volunteerscompose.features.home.presentation.states.HomeViewState
 import com.fabianospdev.volunteerscompose.features.home.presentation.states.toErrorType
@@ -28,10 +29,7 @@ import com.fabianospdev.volunteerscompose.features.login.presentation.components
 @Composable
 fun HomeScreen(
     viewState: HomeViewState,
-    onNavigateToSettings: () -> Unit = {},
-    onNavigateToProfile: () -> Unit = {},
-    onNavigateToLogin: () -> Unit = {},
-    onRetry: () -> Unit
+    actions: HomeActions = HomeActions()
 ) {
     Scaffold(
         modifier = Modifier
@@ -60,9 +58,7 @@ fun HomeScreen(
                 is HomeState.HomeIdle -> {
                     HomeContent(
                         home = null,
-                        onNavigateToSettings = onNavigateToSettings,
-                        onNavigateToProfile = onNavigateToProfile,
-                        onNavigateToLogin = onNavigateToLogin,
+                        actions = actions,
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding)
@@ -72,9 +68,7 @@ fun HomeScreen(
                 is HomeState.HomeSuccess -> {
                     HomeContent(
                         home = s.response,
-                        onNavigateToSettings = onNavigateToSettings,
-                        onNavigateToProfile = onNavigateToProfile,
-                        onNavigateToLogin = onNavigateToLogin,
+                        actions = actions,
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding)
@@ -100,7 +94,7 @@ fun HomeScreen(
                     ShowErrorScreen(
                         type = s.toErrorType(),
                         message = message,
-                        onRetry = onRetry
+                        onRetry = actions.onRetry
                     )
                 }
             }
@@ -111,9 +105,7 @@ fun HomeScreen(
 @Composable
 fun HomeContent(
     home: HomeEntity?,
-    onNavigateToSettings: () -> Unit = {},
-    onNavigateToProfile: () -> Unit = {},
-    onNavigateToLogin: () -> Unit = {},
+    actions: HomeActions = HomeActions(),
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -141,21 +133,21 @@ fun HomeContent(
             }
 
             Button(
-                onClick = onNavigateToSettings,
+                onClick = actions.onNavigateToSettings,
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text("Settings")
             }
 
             Button(
-                onClick = onNavigateToProfile,
+                onClick = actions.onNavigateToProfile,
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text("Profile")
             }
 
             Button(
-                onClick = onNavigateToLogin,
+                onClick = actions.onNavigateToLogin,
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text("Logout")

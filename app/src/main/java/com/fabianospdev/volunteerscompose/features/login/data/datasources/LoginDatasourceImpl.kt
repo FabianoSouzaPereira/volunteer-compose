@@ -10,7 +10,6 @@ class LoginDatasourceImpl @Inject constructor(
     private val api: LoginApiService
 ) : LoginDatasource {
     override suspend fun getLogin(email: String, password: String): Result<LoginResponseModel> {
-        return Result.success(LoginResponseModel(id = "1", name = "Fabiano",email = "email@email.com" ,token = "token"))
         return try {
             val response = api.login(LoginRequestModel(email = email, password = password))
             Result.success(response)

@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.fabianospdev.volunteerscompose.R
 import com.fabianospdev.volunteerscompose.features.login.presentation.components.ShowErrorScreen
+import com.fabianospdev.volunteerscompose.features.settings.presentation.states.SettingsActions
 import com.fabianospdev.volunteerscompose.features.settings.presentation.states.SettingsState
 import com.fabianospdev.volunteerscompose.features.settings.presentation.states.SettingsViewState
 import com.fabianospdev.volunteerscompose.features.settings.presentation.states.toErrorType
@@ -36,13 +37,7 @@ import com.fabianospdev.volunteerscompose.features.settings.presentation.states.
 @Composable
 fun SettingsScreen(
     viewState: SettingsViewState,
-    onDarkModeToggle: (Boolean) -> Unit,
-    onNotificationsToggle: (Boolean) -> Unit,
-    onNavigateBack: () -> Unit,
-    onNavigateToProfile: () -> Unit,
-    onNavigateToAbout: () -> Unit,
-    onLogout: () -> Unit,
-    onRetry: () -> Unit
+    actions: SettingsActions = SettingsActions()
 ) {
     val settings = viewState.settings
 
@@ -51,7 +46,7 @@ fun SettingsScreen(
             TopAppBar(
                 title = { Text("Configurações") },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
+                    IconButton(onClick = actions.onNavigateBack) {
                         Icon(
                             painter = painterResource(id = R.drawable.outline_arrow_back_24),
                             contentDescription = "Voltar"
@@ -103,7 +98,7 @@ fun SettingsScreen(
                                 trailingContent = {
                                     Switch(
                                         checked = settings.darkMode,
-                                        onCheckedChange = onDarkModeToggle
+                                        onCheckedChange = actions.onDarkModeToggle
                                     )
                                 }
                             )
@@ -131,7 +126,7 @@ fun SettingsScreen(
                                 trailingContent = {
                                     Switch(
                                         checked = settings.notifications,
-                                        onCheckedChange = onNotificationsToggle
+                                        onCheckedChange = actions.onNotificationsToggle
                                     )
                                 }
                             )
@@ -149,7 +144,7 @@ fun SettingsScreen(
                             Spacer(modifier = Modifier.height(16.dp))
 
                             Button(
-                                onClick = onNavigateToProfile,
+                                onClick = actions.onNavigateToProfile,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Icon(
@@ -163,7 +158,7 @@ fun SettingsScreen(
                             Spacer(modifier = Modifier.height(8.dp))
 
                             Button(
-                                onClick = onNavigateToAbout,
+                                onClick = actions.onNavigateToAbout,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Icon(
@@ -187,7 +182,7 @@ fun SettingsScreen(
                             Spacer(modifier = Modifier.height(16.dp))
 
                             Button(
-                                onClick = onLogout,
+                                onClick = actions.onLogout,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Text("Sair")
@@ -216,7 +211,7 @@ fun SettingsScreen(
                 ShowErrorScreen(
                     type = currentState.toErrorType(),
                     message = message,
-                    onRetry = onRetry
+                    onRetry = actions.onRetry
                 )
             }
         }

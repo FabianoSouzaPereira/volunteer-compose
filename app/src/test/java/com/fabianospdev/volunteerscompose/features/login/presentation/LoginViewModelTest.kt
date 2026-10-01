@@ -144,20 +144,17 @@ class LoginViewModelTest {
         viewModel.onPasswordChange("123456")
 
         viewModel.viewState.test {
-            val initialState = awaitItem()
-            assertEquals(LoginState.LoginIdle, initialState.screenState)
+            assertEquals(LoginState.LoginIdle, awaitItem().screenState)
 
             viewModel.onLoginClick()
+            assertEquals(LoginState.LoginLoading, awaitItem().screenState)
 
-            awaitItem() // necessário pois a troca de estado sempre passa por idle
+            advanceUntilIdle()
 
-            val loadingState = awaitItem()
-            assertEquals(LoginState.LoginLoading, loadingState.screenState)
-
-            advanceUntilIdle() // Aguarda a conclusão da corrotina
-            awaitItem()
-
-            val successState = awaitItem()
+            var successState = awaitItem()
+            if (successState.screenState is LoginState.LoginLoading) {
+                successState = awaitItem()
+            }
             assertTrue(successState.screenState is LoginState.LoginSuccess)
 
             val loginSuccess = successState.screenState as LoginState.LoginSuccess

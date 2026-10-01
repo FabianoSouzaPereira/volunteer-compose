@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fabianospdev.volunteerscompose.R
 import com.fabianospdev.volunteerscompose.core.utils.LoadFontsFamily
+import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginActions
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginFormState
 import com.fabianospdev.volunteerscompose.features.login.presentation.utils.isRunningRoboletric
 import com.fabianospdev.volunteerscompose.ui.theme.appGradient
@@ -64,15 +65,9 @@ import com.fabianospdev.volunteerscompose.ui.theme.appGradient
 @Composable
 fun ShowLoginIdle(
     formState: LoginFormState,
-    onLoginClick: () -> Unit,
-    onUsernameChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
-    onTogglePasswordVisibility: () -> Unit,
+    actions: LoginActions = LoginActions(),
     focusRequester: FocusRequester,
-    keyboardController: SoftwareKeyboardController?,
-    onNavigateToForgotPassword: () -> Unit = {},
-    onNavigateToRegister: () -> Unit = {},
-    onNavigateToSettings: () -> Unit = {}
+    keyboardController: SoftwareKeyboardController?
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -126,7 +121,7 @@ fun ShowLoginIdle(
 
                 TextField(
                     value = formState.username,
-                    onValueChange = onUsernameChange,
+                    onValueChange = actions.onUsernameChange,
                     label = { Text(stringResource(R.string.email)) },
                     isError = formState.usernameError != null,
                     keyboardOptions = KeyboardOptions.Default.copy(
@@ -181,7 +176,7 @@ fun ShowLoginIdle(
 
                 TextField(
                     value = formState.password,
-                    onValueChange = onPasswordChange,
+                    onValueChange = actions.onPasswordChange,
                     label = { Text(stringResource(R.string.password)) },
                     isError = formState.passwordError != null,
                     keyboardOptions = KeyboardOptions.Default.copy(
@@ -231,7 +226,7 @@ fun ShowLoginIdle(
                         )
                     },
                     trailingIcon = {
-                        IconButton(onClick = onTogglePasswordVisibility, modifier = Modifier.testTag("TogglePasswordVisibility")) {
+                        IconButton(onClick = actions.onTogglePasswordVisibility, modifier = Modifier.testTag("TogglePasswordVisibility")) {
                             val iconId = if (formState.showPassword) {
                                 R.drawable.baseline_remove_red_eye_24
                             } else {
@@ -266,7 +261,7 @@ fun ShowLoginIdle(
 
 
                 Button(
-                    onClick = { onLoginClick() },
+                    onClick = { actions.onLoginClick() },
                     enabled = formState.isFormValid,
                     interactionSource = remember { MutableInteractionSource() },
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp),
@@ -315,7 +310,7 @@ fun ShowLoginIdle(
                 ) {
 
                     TextButton(
-                        onClick = onNavigateToForgotPassword,
+                        onClick = actions.onNavigateToForgotPassword,
                         modifier = Modifier.testTag("forgotPasswordButton")
                     ) {
                         Text(
@@ -326,7 +321,7 @@ fun ShowLoginIdle(
                     }
 
                     TextButton(
-                        onClick = onNavigateToRegister,
+                        onClick = actions.onNavigateToRegister,
                         modifier = Modifier.testTag("registerButton")
                     ) {
                         Text(
@@ -337,7 +332,7 @@ fun ShowLoginIdle(
                     }
 
                     TextButton(
-                        onClick = onNavigateToSettings,
+                        onClick = actions.onNavigateToSettings,
                         modifier = Modifier.testTag("settingsButton")
                     ) {
                         Text(
@@ -368,10 +363,7 @@ fun ShowLoginIdlePreview() {
 
     ShowLoginIdle(
         formState = sampleFormState,
-        onLoginClick = { },
-        onUsernameChange = {},
-        onPasswordChange = {},
-        onTogglePasswordVisibility = {},
+        actions = LoginActions(),
         focusRequester = focusRequester,
         keyboardController = null
     )
