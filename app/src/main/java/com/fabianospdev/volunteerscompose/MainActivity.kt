@@ -14,16 +14,22 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.fabianospdev.volunteerscompose.core.routes.AppNavigator
 import com.fabianospdev.volunteerscompose.core.routes.Routes
+import com.fabianospdev.volunteerscompose.features.about.presentation.AboutRoute
+import com.fabianospdev.volunteerscompose.features.about.presentation.states.AboutNavigationEvent
+import com.fabianospdev.volunteerscompose.features.forgotpassword.presentation.ForgotPasswordRoute
+import com.fabianospdev.volunteerscompose.features.forgotpassword.presentation.states.ForgotPasswordNavigationEvent
 import com.fabianospdev.volunteerscompose.features.home.presentation.HomeRoute
 import com.fabianospdev.volunteerscompose.features.home.presentation.states.HomeNavigationEvent
 import com.fabianospdev.volunteerscompose.features.login.presentation.LoginRoute
 import com.fabianospdev.volunteerscompose.features.login.presentation.states.LoginNavigationEvent
+import com.fabianospdev.volunteerscompose.features.profile.presentation.ProfileRoute
+import com.fabianospdev.volunteerscompose.features.profile.presentation.states.ProfileNavigationEvent
+import com.fabianospdev.volunteerscompose.features.register.presentation.RegisterRoute
+import com.fabianospdev.volunteerscompose.features.register.presentation.states.RegisterNavigationEvent
 import com.fabianospdev.volunteerscompose.features.settings.presentation.SettingsRoute
 import com.fabianospdev.volunteerscompose.features.settings.presentation.states.SettingsNavigationEvent
 import com.fabianospdev.volunteerscompose.features.splash.presentation.SplashNavigationEvent
 import com.fabianospdev.volunteerscompose.features.splash.presentation.SplashRoute
-import com.fabianospdev.volunteerscompose.features.stub.presentation.StubNavigationEvent
-import com.fabianospdev.volunteerscompose.features.stub.presentation.StubRoute
 import com.fabianospdev.volunteerscompose.ui.theme.VolunteersTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -104,30 +110,42 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                         composable(Routes.FORGOT_PASSWORD) {
-                            StubRoute(title = "Esqueci minha senha") { event ->
+                            ForgotPasswordRoute { event ->
                                 when (event) {
-                                    is StubNavigationEvent.NavigateBack -> navigator.popBackStack()
+                                    is ForgotPasswordNavigationEvent.NavigateBack,
+                                    is ForgotPasswordNavigationEvent.NavigateToLogin ->
+                                        navigator.popBackStack()
+                                    is ForgotPasswordNavigationEvent.NavigateToRoute ->
+                                        navigator.navigateTo(event.route)
                                 }
                             }
                         }
                         composable(Routes.REGISTER) {
-                            StubRoute(title = "Criar conta") { event ->
+                            RegisterRoute { event ->
                                 when (event) {
-                                    is StubNavigationEvent.NavigateBack -> navigator.popBackStack()
+                                    is RegisterNavigationEvent.NavigateBack,
+                                    is RegisterNavigationEvent.NavigateToLogin ->
+                                        navigator.popBackStack()
+                                    is RegisterNavigationEvent.NavigateToRoute ->
+                                        navigator.navigateTo(event.route)
                                 }
                             }
                         }
                         composable(Routes.PROFILE) {
-                            StubRoute(title = "Perfil") { event ->
+                            ProfileRoute { event ->
                                 when (event) {
-                                    is StubNavigationEvent.NavigateBack -> navigator.popBackStack()
+                                    is ProfileNavigationEvent.NavigateBack ->
+                                        navigator.popBackStack()
+                                    is ProfileNavigationEvent.NavigateToRoute ->
+                                        navigator.navigateTo(event.route)
                                 }
                             }
                         }
                         composable(Routes.ABOUT) {
-                            StubRoute(title = "Sobre") { event ->
+                            AboutRoute { event ->
                                 when (event) {
-                                    is StubNavigationEvent.NavigateBack -> navigator.popBackStack()
+                                    is AboutNavigationEvent.NavigateBack ->
+                                        navigator.popBackStack()
                                 }
                             }
                         }
